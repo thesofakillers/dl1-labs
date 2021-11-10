@@ -1,5 +1,6 @@
 # custom
 .DS_Store
+*.skim
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
