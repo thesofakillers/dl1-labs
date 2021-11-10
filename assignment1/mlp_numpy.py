@@ -108,7 +108,7 @@ class MLP(object):
         TODO:
         Iterate over modules and call the 'clear_cache' function.
         """
-        
+
         #######################
         # PUT YOUR CODE HERE  #
         #######################
