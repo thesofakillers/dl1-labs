@@ -139,6 +139,7 @@ class ReLUModule(object):
         Parameters
         ----------
         x: np.ndarray
+            input to the module
 
         Returns
         -------
