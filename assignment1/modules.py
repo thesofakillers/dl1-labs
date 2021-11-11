@@ -278,20 +278,26 @@ class CrossEntropyModule(object):
     def forward(self, x, y):
         """
         Forward pass.
-        Args:
-          x: input to the module
-          y: labels of the input
-        Returns:
-          out: cross entropy loss
 
-        TODO:
-        Implement forward pass of the module.
+        Parameters
+        ----------
+        x: np.ndarray
+            input to the module
+        y: np.ndarray
+            labels of the input
+
+        Returns
+        -------
+        out : float
+            average cross entropy loss
+            for this batch
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        one_hot = np.eye(y.max() + 1)[y]
+        out = -(1 / x.shape[0]) * np.sum(one_hot * np.log(x))
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -301,20 +307,26 @@ class CrossEntropyModule(object):
     def backward(self, x, y):
         """
         Backward pass.
-        Args:
-          x: input to the module
-          y: labels of the input
-        Returns:
-          dx: gradient of the loss with the respect to the input x.
 
-        TODO:
-        Implement backward pass of the module.
+        Parameters
+        ----------
+        x : np.ndarray
+            input to the module
+        y : np.ndarray
+            labels of the input.
+            not one-hot encoded
+
+        Returns
+        -------
+        dx : np.ndarray
+            gradient of the loss with the respect to the input x.
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        one_hot = np.eye(y.max() + 1)[y]
+        dx = -1 / x.shape[0] * np.divide(one_hot, x)
         #######################
         # END OF YOUR CODE    #
         #######################
