@@ -206,22 +206,26 @@ class SoftMaxModule(object):
     def forward(self, x):
         """
         Forward pass.
-        Args:
-          x: input to the module
-        Returns:
-          out: output of the module
 
-        TODO:
-        Implement forward pass of the module.
-        To stabilize computation you should use the so-called Max Trick - https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/
+        Parameters
+        ----------
+        x : np.ndarray
+            input to the module
 
-        Hint: You can store intermediate variables inside the object. They can be used in backward pass computation.
+        Returns
+        -------
+        out: np.ndarray
+            output of the module
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        # need to use Max Trick to stabilize computation
+        shift = np.max(x, axis=1)[:, np.newaxis]
+        exps = np.exp(x - shift)
+        out = exps / (exps.sum(axis=1)[:, np.newaxis])
+        self.out = out
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -231,37 +235,36 @@ class SoftMaxModule(object):
     def backward(self, dout):
         """
         Backward pass.
-        Args:
-          dout: gradients of the previous modul
-        Returns:
-          dx: gradients with respect to the input of the module
 
-        TODO:
-        Implement backward pass of the module.
+        Parameters
+        ----------
+        dout : np.ndarray
+            gradients of the previous module
+
+        Returns
+        -------
+        dx : np.ndarray
+            gradients with respect to the input of the module
         """
-
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        N = dout.shape[1]
+        dx = self.out * (dout - (dout * self.out) @ np.ones((N, N)))
         #######################
         # END OF YOUR CODE    #
         #######################
-
         return dx
 
     def clear_cache(self):
         """
         Remove any saved tensors for the backward pass.
         Used to clean-up model from any remaining input data when we want to save it.
-
-        TODO:
-        Set any caches you have to None.
         """
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        self.out = None
         #######################
         # END OF YOUR CODE    #
         #######################
