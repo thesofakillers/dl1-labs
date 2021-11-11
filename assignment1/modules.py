@@ -25,50 +25,62 @@ class LinearModule(object):
     Linear module. Applies a linear transformation to the input data.
     """
 
-    def __init__(self, in_features, out_features, input_layer=False):
+    def __init__(self, in_features: int, out_features: int, input_layer: bool = False):
         """
         Initializes the parameters of the module.
 
-        Args:
-          in_features: size of each input sample
-          out_features: size of each output sample
-          input_layer: boolean, True if this is the first layer after the input, else False.
-
-        TODO:
-        Initialize weight parameters using Kaiming initialization.
-        Initialize biases with zeros.
-        Hint: the input_layer argument might be needed for the initialization
-
-        Also, initialize gradients with zeros.
+        Parameters:
+        ----------
+        in_features : int
+            size of each input sample
+        out_features : int
+            size of each output sample
+        input_layer : bool
+            True if this is the first layer after the input, else False.
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        self.in_features = in_features
+        self.out_features = out_features
+        self.params = {"bias": np.zeros(out_features)}
+        if input_layer:
+            # input_layer hasn't had ReLU applied yet, so kaiming init is different
+            self.params["weight"] = np.random.normal(
+                0, np.sqrt(1 / in_features), (out_features, in_features)
+            )
+        else:
+            self.params["weight"] = np.random.normal(
+                0, np.sqrt(2 / in_features), (out_features, in_features)
+            )
+        self.grads = {
+            "weight": np.zeros_like(self.params["weight"]),
+            "bias": np.zeros_like(self.params["bias"]),
+        }
         #######################
         # END OF YOUR CODE    #
         #######################
 
-    def forward(self, x):
+    def forward(self, x: np.ndarray):
         """
         Forward pass.
 
-        Args:
-          x: input to the module
-        Returns:
-          out: output of the module
+        Parameters
+        ----------
+        x: np.ndarray
+            (in_features, ) array of input
 
-        TODO:
-        Implement forward pass of the module.
-
-        Hint: You can store intermediate variables inside the object. They can be used in backward pass computation.
+        Returns
+        -------
+        out : np.ndarray
+            (out_features, ) array of output
         """
-
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        self.x = x  # caching so we can use it in backward
+        out = x @ self.params["weight"].T + self.params["bias"]
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -79,20 +91,23 @@ class LinearModule(object):
         """
         Backward pass.
 
-        Args:
-          dout: gradients of the previous module
-        Returns:
-          dx: gradients with respect to the input of the module
+        Parameters
+        ----------
+        dout : np.ndarray
+            (-1, out_features) array
+            containing gradients of the previous module
 
-        TODO:
-        Implement backward pass of the module. Store gradient of the loss with respect to
-        layer parameters in self.grads['weight'] and self.grads['bias'].
+        Returns
+        -------
+        dx: np.ndarray
+            gradients with respect to the input of the module
         """
-
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        self.grads["weight"] = dout.T @ self.x
+        self.grads["bias"] = np.ones((1, dout.shape[0])) @ dout
+        dx = dout @ self.params["weight"]
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -102,14 +117,11 @@ class LinearModule(object):
         """
         Remove any saved tensors for the backward pass.
         Used to clean-up model from any remaining input data when we want to save it.
-
-        TODO:
-        Set any caches you have to None.
         """
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        self.x = None
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -123,22 +135,23 @@ class ReLUModule(object):
     def forward(self, x):
         """
         Forward pass.
-
-        Args:
-          x: input to the module
-        Returns:
-          out: output of the module
-
-        TODO:
-        Implement forward pass of the module.
-
         Hint: You can store intermediate variables inside the object. They can be used in backward pass computation.
+
+        Parameters
+        ----------
+        x: array-like
+            input to the module
+
+        Returns
+        -------
+        out : array-like
+            result of applying ReLU to x
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        # TODO
         #######################
         # END OF YOUR CODE    #
         #######################
