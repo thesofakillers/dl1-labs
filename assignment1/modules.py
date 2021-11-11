@@ -135,23 +135,24 @@ class ReLUModule(object):
     def forward(self, x):
         """
         Forward pass.
-        Hint: You can store intermediate variables inside the object. They can be used in backward pass computation.
 
         Parameters
         ----------
-        x: array-like
+        x: np.ndarray
             input to the module
 
         Returns
         -------
-        out : array-like
-            result of applying ReLU to x
+        out : np.ndarray
+            result of applying ReLU to x.
+            Same shape as x, since ReLU is element-wise.
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        # TODO
+        self.x = x
+        out = x * (x > 0).astype(float)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -161,19 +162,22 @@ class ReLUModule(object):
     def backward(self, dout):
         """
         Backward pass.
-        Args:
-          dout: gradients of the previous module
-        Returns:
-          dx: gradients with respect to the input of the module
 
-        TODO:
-        Implement backward pass of the module.
+        Parameters
+        ----------
+        dout : np.ndarray
+            gradients of the previous module
+
+        Returns:
+        -------
+        dx : np.ndarray
+            gradients with respect to the input of the module
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        dx = dout * (1 * (self.x > 0).astype(float))
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -184,13 +188,11 @@ class ReLUModule(object):
         Remove any saved tensors for the backward pass.
         Used to clean-up model from any remaining input data when we want to save it.
 
-        TODO:
-        Set any caches you have to None.
         """
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        self.x = None
         #######################
         # END OF YOUR CODE    #
         #######################
