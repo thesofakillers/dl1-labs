@@ -106,7 +106,7 @@ class MLP(object):
 
         return out
 
-    def backward(self, dout):
+    def backward(self, dout: np.ndarray):
         """
         Performs backward pass given the gradients of the loss.
 
