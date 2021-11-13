@@ -38,22 +38,26 @@ def accuracy(predictions, targets):
     Computes the prediction accuracy, i.e. the average of correct predictions
     of the network.
 
-    Args:
-      predictions: 2D float array of size [batch_size, n_classes]
-      labels: 1D int array of size [batch_size]. Ground truth labels for
-              each sample in the batch
-    Returns:
-      accuracy: scalar float, the accuracy of predictions between 0 and 1,
-                i.e. the average correct predictions over the whole batch
+    Parameters
+    ----------
+    predictions : np.ndarray
+        2D float array of size [batch_size, n_classes]
+    labels : np.ndarray
+        1D int array of size [batch_size]. Ground truth labels for
+        each sample in the batch
 
-    TODO:
-    Implement accuracy computation.
+    Returns
+    -------
+    accuracy : float
+        the accuracy of predictions between 0 and 1,
+        i.e. the average correct predictions over the whole batch
     """
 
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
+    y_pred = predictions.argmax(axis=1)
+    accuracy = np.mean(y_pred == targets)
     #######################
     # END OF YOUR CODE    #
     #######################
