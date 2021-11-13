@@ -44,7 +44,7 @@ class LinearModule(object):
         #######################
         self.in_features = in_features
         self.out_features = out_features
-        self.params = {"bias": np.zeros(out_features)}
+        self.params = {"bias": np.zeros((1, out_features))}
         if input_layer:
             # input_layer hasn't had ReLU applied yet, so kaiming init is different
             self.params["weight"] = np.random.normal(
@@ -296,7 +296,7 @@ class CrossEntropyModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        one_hot = np.eye(y.max() + 1)[y]
+        one_hot = np.eye(x.shape[1])[y]
         out = -(1 / x.shape[0]) * np.sum(one_hot * np.log(x))
         #######################
         # END OF YOUR CODE    #
@@ -325,7 +325,7 @@ class CrossEntropyModule(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        one_hot = np.eye(y.max() + 1)[y]
+        one_hot = np.eye(x.shape[1])[y]
         dx = -1 / x.shape[0] * np.divide(one_hot, x)
         #######################
         # END OF YOUR CODE    #
