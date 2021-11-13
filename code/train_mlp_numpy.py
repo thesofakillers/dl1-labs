@@ -105,7 +105,7 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
     Parameters
     ----------
     hidden_dims : list of ints
-        specificying the hidden dimensionalities to use in the MLP.
+        specifying the hidden dimensionalities to use in the MLP.
     lr : float
         Learning rate of the SGD to apply.
     batch_size : int
@@ -130,17 +130,6 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
     logging_info: dict
         An arbitrary object containing logging information. This is for you to
         decide what to put in here.
-
-    TODO:
-    - Implement the training of the MLP model.
-    - Evaluate your model on the whole validation set each epoch.
-    - After finishing training, evaluate your model that performed best on the validation set,
-      on the whole test dataset.
-    - Integrate _all_ input arguments of this function in your training. You are allowed to add
-      additional input argument if you assign it a default value that represents the plain training
-      (e.g. '..., new_param=False')
-
-    Hint: you can save your best model by deepcopy-ing it.
     """
 
     # Set the random seeds for reproducibility
@@ -156,56 +145,51 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
-    # TODO: Initialize model and loss module
-    model = MLP(np.array(cifar10["train"][0][0].shape).prod(), hidden_dims, 10)
+    # initializations
+    candidate = MLP(np.array(cifar10["train"][0][0].shape).prod(), hidden_dims, 10)
     loss_module = CrossEntropyModule()
-    # TODO: Training loop including validation
-
     logging_dict = {
         "loss": {"train": np.zeros(epochs), "validation": np.zeros(epochs)},
         "accuracy": {"train": np.zeros(epochs), "validation": np.zeros(epochs)},
     }
     best_accuracy = 0
+    # training
     for epoch in range(epochs):
         for mode in ["train", "validation"]:
-            n_batches = len(cifar10_loader[mode])
+            n_batches = len(cifar10_loader[mode])  # for avg accuracy calculation
             with tqdm(cifar10_loader[mode], unit="batch") as curr_epoch:
-                for data, targets in curr_epoch:
+                for features_X, true_y in curr_epoch:
                     curr_epoch.set_description(f"Epoch {epoch+1}: {mode}")
-
-                    y_scores = model.forward(data)
-                    batch_loss = loss_module.forward(y_scores, targets)
-
-                    logging_dict["loss"][mode][epoch] += batch_loss / targets.size
-                    logging_dict["accuracy"][mode][epoch] += (
-                        accuracy(y_scores, targets) / n_batches
-                    )
-
+                    # forward pass and loss
+                    y_pred = candidate.forward(features_X)
+                    batch_loss = loss_module.forward(y_pred, true_y)
+                    # backpropagation if in training mode
                     if mode == "train":
-                        loss_grad = loss_module.backward(y_scores, targets)
-                        model.backward(loss_grad)
-                        for module in model.modules[::2]:
+                        loss_grad = loss_module.backward(y_pred, true_y)
+                        candidate.backward(loss_grad)
+                        for module in candidate.modules[::2]:
                             module.params["weight"] -= lr * module.grads["weight"]
                             module.params["bias"] -= lr * module.grads["bias"]
+                    # metrics
+                    logging_dict["loss"][mode][epoch] += batch_loss / true_y.size
+                    logging_dict["accuracy"][mode][epoch] += (
+                        accuracy(y_pred, true_y) / n_batches
+                    )
+        # we use validation accuracy to pick the best model
         if mode == "validation":
             if logging_dict["accuracy"][mode][epoch] > best_accuracy:
-                print(f"New best accuracy: {logging_dict['accuracy'][mode][epoch]}")
+                print(
+                    f"New best accuracy: {logging_dict['accuracy'][mode][epoch]:0.3f}"
+                )
                 best_accuracy = logging_dict["accuracy"]["validation"][epoch]
-                best_model = deepcopy(model)
-
+                model = deepcopy(candidate)
+    # additional return value requested
     val_accuracies = logging_dict["accuracy"]["validation"]
-    # TODO: Test best model
-    test_accuracy = evaluate_model(best_model, cifar10_loader["test"])
-    # TODO: Add any information you might want to save for plotting
+    # evaluated model on test set
+    test_accuracy = evaluate_model(model, cifar10_loader["test"])
     #######################
     # END OF YOUR CODE    #
     #######################
-
-    print(logging_dict["loss"]["train"])
-    print(logging_dict["loss"]["validation"])
-    print(val_accuracies)
-    print(test_accuracy)
     return model, val_accuracies, test_accuracy, logging_dict
 
 
