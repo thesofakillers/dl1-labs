@@ -88,9 +88,6 @@ class MLP(object):
         -------
         out : np.ndarray
             (n_samples, n_output) outputs of the network
-
-        TODO:
-        Implement forward pass of the network.
         """
 
         #######################
