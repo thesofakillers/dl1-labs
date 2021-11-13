@@ -136,12 +136,16 @@ class MLP(object):
 
 
 # if __name__ == "__main__":
-#     mlp = MLP(784, [], 10)
+#     mlp = MLP(784, [3, 5, 6], 10)
 #     x = np.random.randn(7, 784)
 #     y = mlp.forward(x)
 #     # simulate backprop
 #     dout = np.random.randn(7, 10)
 #     mlp.backward(dout)
-#     print(y.shape)
-#     print(y)
-#     print(y.sum(axis=1))
+#     print(f"forward output shape: {y.shape}")
+#     print(f"forward output: {y}")
+#     print(f"forward output sum over axis 1: {y.sum(axis=1)}")
+#     print(f"first layer bias shape {mlp.modules[2].params['bias'].shape}")
+#     print(f"first layer bias grad shape {mlp.modules[2].grads['bias'].shape}")
+#     print(f"first layer weight shape {mlp.modules[2].params['weight'].shape}")
+#     print(f"first layer weight grad shape {mlp.modules[2].grads['weight'].shape}")
