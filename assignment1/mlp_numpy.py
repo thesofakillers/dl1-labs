@@ -20,6 +20,8 @@ You should fill in code into indicated sections.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+import typing as tg
+import numpy as np
 
 from modules import *
 
@@ -31,41 +33,61 @@ class MLP(object):
     Once initialized an MLP object can perform forward and backward.
     """
 
-    def __init__(self, n_inputs, n_hidden, n_classes):
+    def __init__(self, n_inputs: int, n_hidden: tg.List[int], n_classes: int):
         """
         Initializes MLP object.
 
-        Args:
-          n_inputs: number of inputs.
-          n_hidden: list of ints, specifies the number of units
-                    in each linear layer. If the list is empty, the MLP
-                    will not have any linear layers, and the model
-                    will simply perform a multinomial logistic regression.
-          n_classes: number of classes of the classification problem.
-                     This number is required in order to specify the
-                     output dimensions of the MLP
-
-        TODO:
-        Implement initialization of the network.
+        Parameters
+        -----------
+        n_inputs : int
+            number of inputs.
+        n_hidden : list of int
+            specifies the number of units in each linear layer.
+            If the list is empty, the MLP will not have any
+            linear layers, and the model will simply perform
+            a multinomial logistic regression.
+        n_classes: int
+            number of classes of the classification problem.
+            This number is required in order to specify the
+            output dimensions of the MLP
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        self.modules = []
+        # including input so that if we have hidden layers can match input/output dims
+        layer_units = [n_inputs] + n_hidden
+        tot_layers = len(layer_units)
+        for i, dim in enumerate(layer_units):
+            # handle input layer
+            if i == 0:
+                self.modules.append(LinearModule(dim, layer_units[i + 1], True))
+            elif i < tot_layers - 1:
+                self.modules.append(ReLUModule())
+                self.modules.append(LinearModule(dim, layer_units[i + 1]))
+        # handle final layer
+        self.modules.append(SoftMaxModule())
+        self.modules.append(LinearModule(self.modules[-1].out_features, n_classes))
         #######################
         # END OF YOUR CODE    #
         #######################
 
-    def forward(self, x):
+    def forward(self, x: np.ndarray):
         """
-        Performs forward pass of the input. Here an input tensor x is transformed through
+        Performs forward pass of the input.
+        Here an input tensor x is transformed through
         several layer transformations.
 
-        Args:
-          x: input to the network
-        Returns:
-          out: outputs of the network
+        Parameters
+        ----------
+        x : np.ndarray
+            (n_samples, n_input) input to the network
+
+        Returns
+        -------
+        out : np.ndarray
+            (n_samples, n_output) outputs of the network
 
         TODO:
         Implement forward pass of the network.
@@ -74,7 +96,10 @@ class MLP(object):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        x = x.reshape(x.shape[0], -1)
+        for module in self.modules:
+            x = module.forward(x)
+        out = x
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -85,17 +110,17 @@ class MLP(object):
         """
         Performs backward pass given the gradients of the loss.
 
-        Args:
-          dout: gradients of the loss
-
-        TODO:
-        Implement backward pass of the network.
+        Parameters
+        ----------
+        dout : np.ndarray
+            gradients of the loss
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        for module in reversed(self.modules):
+            dout = module.backward(dout)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -104,15 +129,13 @@ class MLP(object):
         """
         Remove any saved tensors for the backward pass from any module.
         Used to clean-up model from any remaining input data when we want to save it.
-
-        TODO:
-        Iterate over modules and call the 'clear_cache' function.
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        for module in self.modules:
+            module.clear_cache()
         #######################
         # END OF YOUR CODE    #
         #######################
