@@ -56,19 +56,16 @@ class MLP(object):
         # PUT YOUR CODE HERE  #
         #######################
         self.modules = []
-        # including input so that if we have hidden layers can match input/output dims
-        layer_units = [n_inputs] + n_hidden
-        tot_layers = len(layer_units)
-        for i, dim in enumerate(layer_units):
-            # handle input layer
-            if i == 0:
-                self.modules.append(LinearModule(dim, layer_units[i + 1], True))
-            elif i < tot_layers - 1:
-                self.modules.append(ReLUModule())
-                self.modules.append(LinearModule(dim, layer_units[i + 1]))
-        # handle final layer
+        # getting all dims
+        dims = [n_inputs] + n_hidden + [n_classes]
+        # handle first layer specifically
+        self.modules.append(LinearModule(n_inputs, dims[1], True))
+        # handle hidden layers + output
+        for i in range(1, len(dims) - 1):
+            self.modules.append(ReLUModule())
+            self.modules.append(LinearModule(dims[i], dims[i + 1]))
+        # handle last layer (diff activation)
         self.modules.append(SoftMaxModule())
-        self.modules.append(LinearModule(self.modules[-1].out_features, n_classes))
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -136,3 +133,15 @@ class MLP(object):
         #######################
         # END OF YOUR CODE    #
         #######################
+
+
+# if __name__ == "__main__":
+#     mlp = MLP(784, [], 10)
+#     x = np.random.randn(7, 784)
+#     y = mlp.forward(x)
+#     # simulate backprop
+#     dout = np.random.randn(7, 10)
+#     mlp.backward(dout)
+#     print(y.shape)
+#     print(y)
+#     print(y.sum(axis=1))
