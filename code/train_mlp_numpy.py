@@ -42,7 +42,7 @@ def accuracy(predictions, targets):
     ----------
     predictions : np.ndarray
         2D float array of size [batch_size, n_classes]
-    labels : np.ndarray
+    targets : np.ndarray
         1D int array of size [batch_size]. Ground truth labels for
         each sample in the batch
 
@@ -155,31 +155,31 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
     best_accuracy = 0
     # training
     for epoch in range(epochs):
-        for mode in ["train", "validation"]:
-            n_batches = len(cifar10_loader[mode])  # for avg accuracy calculation
-            with tqdm(cifar10_loader[mode], unit="batch") as curr_epoch:
+        for phase in ["train", "validation"]:
+            n_batches = len(cifar10_loader[phase])  # for avg accuracy calculation
+            with tqdm(cifar10_loader[phase], unit="batch") as curr_epoch:
                 for features_X, true_y in curr_epoch:
-                    curr_epoch.set_description(f"Epoch {epoch+1}: {mode}")
+                    curr_epoch.set_description(f"Epoch {epoch+1/epochs}: {phase}")
                     # forward pass and loss
                     y_pred = candidate.forward(features_X)
                     batch_loss = loss_module.forward(y_pred, true_y)
                     # backpropagation if in training mode
-                    if mode == "train":
+                    if phase == "train":
                         loss_grad = loss_module.backward(y_pred, true_y)
                         candidate.backward(loss_grad)
                         for module in candidate.modules[::2]:
                             module.params["weight"] -= lr * module.grads["weight"]
                             module.params["bias"] -= lr * module.grads["bias"]
                     # metrics
-                    logging_dict["loss"][mode][epoch] += batch_loss / true_y.size
-                    logging_dict["accuracy"][mode][epoch] += (
+                    logging_dict["loss"][phase][epoch] += batch_loss / true_y.size
+                    logging_dict["accuracy"][phase][epoch] += (
                         accuracy(y_pred, true_y) / n_batches
                     )
         # we use validation accuracy to pick the best model
-        if mode == "validation":
-            if logging_dict["accuracy"][mode][epoch] > best_accuracy:
+        if phase == "validation":
+            if logging_dict["accuracy"][phase][epoch] > best_accuracy:
                 print(
-                    f"New best accuracy: {logging_dict['accuracy'][mode][epoch]:0.3f}"
+                    f"New best accuracy: {logging_dict['accuracy'][phase][epoch]:0.3f}"
                 )
                 best_accuracy = logging_dict["accuracy"]["validation"][epoch]
                 model = deepcopy(candidate)
