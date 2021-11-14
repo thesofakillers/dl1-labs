@@ -39,23 +39,30 @@ def accuracy(predictions, targets):
     Computes the prediction accuracy, i.e. the average of correct predictions
     of the network.
 
-    Args:
-      predictions: 2D float array of size [batch_size, n_classes]
-      labels: 2D int array of size [batch_size, n_classes]
-              with one-hot encoding. Ground truth labels for
-              each sample in the batch
-    Returns:
-      accuracy: scalar float, the accuracy of predictions,
-                i.e. the average correct predictions over the whole batch
+    Parameters
+    ----------
+    predictions : torch.Tensor
+        2D float array of size [batch_size, n_classes]
+    targets : np.ndarray
+        1D int array of size [batch_size]. Ground truth labels for
+        each sample in the batch
 
-    TODO:
-    Implement accuracy computation.
+    Returns
+    -------
+    accuracy : float
+        the accuracy of predictions,
+        i.e. the average correct predictions over the whole batch
     """
+    # print(predictions.shape)
+    # print(targets.shape)
 
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
+    y_pred = predictions.argmax(dim=1)
+    # y_true = targets.argmax(dim=1)
+    y_true = targets
+    accuracy = (y_pred == y_true).float().mean()
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -83,7 +90,13 @@ def evaluate_model(model, data_loader):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
+    n_batches = len(data_loader)
+    accuracies = np.zeros(n_batches)
+    for i, (data, target) in enumerate(data_loader):
+        data, target = data.to(model.device), target.to(model.device)
+        predictions = model.forward(data)
+        accuracies[i] = accuracy(predictions, target)
+    avg_accuracy = accuracies.mean()
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -95,33 +108,37 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir):
     """
     Performs a full training cycle of MLP model.
 
-    Args:
-      hidden_dims: A list of ints, specificying the hidden dimensionalities to use in the MLP.
-      lr: Learning rate of the SGD to apply.
-      use_batch_norm: If True, adds batch normalization layer into the network.
-      batch_size: Minibatch size for the data loaders.
-      epochs: Number of training epochs to perform.
-      seed: Seed to use for reproducible results.
-      data_dir: Directory where to store/find the CIFAR10 dataset.
-    Returns:
-      model: An instance of 'MLP', the trained model that performed best on the validation set.
-      val_accuracies: A list of scalar floats, containing the accuracies of the model on the
-                      validation set per epoch (element 0 - performance after epoch 1)
-      test_accuracy: scalar float, average accuracy on the test dataset of the model that
-                     performed best on the validation.
-      logging_info: An arbitrary object containing logging information. This is for you to
-                    decide what to put in here.
+    Parameters
+    ----------
+    hidden_dims : list of int
+        specificying the hidden dimensionalities to use in the MLP.
+    lr : float
+        Learning rate of the SGD to apply.
+    use_batch_norm: bool
+        If True, adds batch normalization layer into the network.
+    batch_size : int
+        Minibatch size for the data loaders.
+    epochs : int
+        Number of training epochs to perform.
+    seed : int
+        Seed to use for reproducible results.
+    data_dir : string
+        Directory where to store/find the CIFAR10 dataset.
 
-    TODO:
-    - Implement the training of the MLP model.
-    - Evaluate your model on the whole validation set each epoch.
-    - After finishing training, evaluate your model that performed best on the validation set,
-      on the whole test dataset.
-    - Integrate _all_ input arguments of this function in your training. You are allowed to add
-      additional input argument if you assign it a default value that represents the plain training
-      (e.g. '..., new_param=False')
-
-    Hint: you can save your best model by deepcopy-ing it.
+    Returns
+    -------
+    model : torch.nn.Module
+        An instance of 'MLP', the trained model that performed
+        best on the validation set.
+    val_accuracies : list of float
+        containing the accuracies of the model on the validation
+        set per epoch (element 0 - performance after epoch 1)
+    test_accuracy : float
+        average accuracy on the test dataset of the model that
+        performed best on the validation.
+    logging_info : dict
+        An arbitrary object containing logging information. This is for you to
+        decide what to put in here.
     """
 
     # Set the random seeds for reproducibility
@@ -145,21 +162,58 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir):
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
-    # TODO: Initialize model and loss module
-    model = ...
-    loss_module = ...
-    # TODO: Training loop including validation
-    # TODO: Do optimization with the simple SGD optimizer
-    val_accuracies = ...
+    # initializations
+    candidate = MLP(
+        np.array(cifar10["train"][0][0].shape).prod(), hidden_dims, 10, use_batch_norm
+    )
+    loss_module = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(candidate.parameters(), lr)
+    logging_info = {
+        "loss": {"train": np.zeros(epochs), "validation": np.zeros(epochs)},
+        "accuracy": {"train": np.zeros(epochs), "validation": np.zeros(epochs)},
+    }
+    best_accuracy = 0
+    for epoch in range(epochs):
+        for phase in ["train", "validation"]:
+            n_batches = len(cifar10_loader[phase])
+            if phase == "train":
+                candidate.train()
+            else:
+                candidate.eval()
+            with tqdm(cifar10_loader[phase], unit="batch") as curr_epoch:
+                for features_X, true_y in curr_epoch:
+                    curr_epoch.set_description(f"Epoch {epoch + 1}/{epochs}: {phase}")
+                    # Move to GPU if possible
+                    features_X = features_X.to(device)
+                    true_y = true_y.to(device)
+                    # zero the parameter gradients
+                    optimizer.zero_grad()
+                    # forward pass and loss
+                    y_pred = candidate.forward(features_X)
+                    loss = loss_module(y_pred, true_y)
+                    # backpropagation if in training mode
+                    if phase == "train":
+                        loss.backward()
+                        optimizer.step()
+                    # metrics
+                    logging_info["loss"][phase][epoch] += loss.item() / n_batches
+                    logging_info["accuracy"][phase][epoch] += (
+                        accuracy(y_pred, true_y) / n_batches
+                    )
+            # we use validation accuracy to pick the best model
+            if phase == "validation":
+                if logging_info["accuracy"][phase][epoch] > best_accuracy:
+                    print(
+                        f"New best accuracy: {logging_info['accuracy'][phase][epoch]:0.3f}"
+                    )
+                    best_accuracy = logging_info["accuracy"]["validation"][epoch]
+                    model = deepcopy(candidate)
+    val_accuracies = logging_info["accuracy"]["validation"]
     # TODO: Test best model
-    test_accuracy = ...
-    # TODO: Add any information you might want to save for plotting
-    logging_info = ...
+    test_accuracy = evaluate_model(model, cifar10_loader["test"])
     #######################
     # END OF YOUR CODE    #
     #######################
-
     return model, val_accuracies, test_accuracy, logging_info
 
 
