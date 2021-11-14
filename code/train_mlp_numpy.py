@@ -159,10 +159,10 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
             n_batches = len(cifar10_loader[phase])  # for avg accuracy calculation
             with tqdm(cifar10_loader[phase], unit="batch") as curr_epoch:
                 for features_X, true_y in curr_epoch:
-                    curr_epoch.set_description(f"Epoch {epoch+1/epochs}: {phase}")
+                    curr_epoch.set_description(f"Epoch {epoch+1}/{epochs}: {phase}")
                     # forward pass and loss
                     y_pred = candidate.forward(features_X)
-                    batch_loss = loss_module.forward(y_pred, true_y)
+                    loss = loss_module.forward(y_pred, true_y)
                     # backpropagation if in training mode
                     if phase == "train":
                         loss_grad = loss_module.backward(y_pred, true_y)
@@ -171,7 +171,7 @@ def train(hidden_dims, lr, batch_size, epochs, seed, data_dir):
                             module.params["weight"] -= lr * module.grads["weight"]
                             module.params["bias"] -= lr * module.grads["bias"]
                     # metrics
-                    logging_dict["loss"][phase][epoch] += batch_loss / true_y.size
+                    logging_dict["loss"][phase][epoch] += loss / n_batches
                     logging_dict["accuracy"][phase][epoch] += (
                         accuracy(y_pred, true_y) / n_batches
                     )
