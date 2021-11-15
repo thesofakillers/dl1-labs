@@ -21,6 +21,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import pickle
 import argparse
 import numpy as np
 import os
@@ -104,7 +105,16 @@ def evaluate_model(model, data_loader):
     return avg_accuracy
 
 
-def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir):
+def train(
+    hidden_dims,
+    lr,
+    use_batch_norm,
+    batch_size,
+    epochs,
+    seed,
+    data_dir,
+    save_path=None,
+):
     """
     Performs a full training cycle of MLP model.
 
@@ -124,6 +134,8 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir):
         Seed to use for reproducible results.
     data_dir : string
         Directory where to store/find the CIFAR10 dataset.
+    save_path : string, optional
+        Path to serialize the loss and accuracy dictionary.
 
     Returns
     -------
@@ -208,9 +220,15 @@ def train(hidden_dims, lr, use_batch_norm, batch_size, epochs, seed, data_dir):
                     )
                     best_accuracy = logging_info["accuracy"]["validation"][epoch]
                     model = deepcopy(candidate)
+    # additional return value requested
     val_accuracies = logging_info["accuracy"]["validation"]
-    # TODO: Test best model
-    test_accuracy = evaluate_model(model, cifar10_loader["test"])
+    # evaluated model on test set
+    logging_info["accuracy"]["test"] = evaluate_model(model, cifar10_loader["test"])
+    test_accuracy = logging_info["accuracy"]["test"]
+    # serialize logging info if specified
+    if save_path is not None:
+        with open(save_path, "wb") as f:
+            pickle.dump(logging_info, f)
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -250,9 +268,16 @@ if __name__ == "__main__":
         type=str,
         help="Data directory where to store/find the CIFAR10 dataset.",
     )
-
+    parser.add_argument(
+        "--save-path",
+        "-sp",
+        default=None,
+        type=str,
+        help="Target path for serializing loss/accuracy dict",
+    )
     args = parser.parse_args()
     kwargs = vars(args)
+
 
     train(**kwargs)
     # Feel free to add any additional functions, such as plotting of the loss curve here
