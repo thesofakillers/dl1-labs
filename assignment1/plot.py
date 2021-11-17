@@ -1,5 +1,6 @@
 import pickle
 import argparse
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -28,21 +29,28 @@ if __name__ == "__main__":
     train_acc = logging_dict["accuracy"]["train"]
     val_acc = logging_dict["accuracy"]["validation"]
 
+    print(f"test accuracy: {logging_dict['accuracy']['test']}")
+
+    epochs = np.arange(1, len(train_loss) + 1)
+
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     ax1.set_title("Loss Curves")
-    ax1.plot(train_loss, label="training")
-    ax1.plot(val_loss, label="validation")
+    ax1.plot(epochs, train_loss, color="black", label="training")
+    ax1.plot(epochs, val_loss, color="red", label="validation")
     ax1.legend()
     ax1.set_ylabel("Loss")
     ax1.set_xlabel("Epoch")
 
     ax2.set_title("Accuracy Curves")
-    ax2.plot(train_acc, label="training")
-    ax2.plot(val_acc, label="validation")
+    ax2.plot(epochs, train_acc, color="black", label="training")
+    ax2.plot(epochs, val_acc, color="red", label="validation")
     ax2.legend()
     ax2.set_ylabel("Accuracy")
     ax2.set_xlabel("Epoch")
-    fig.suptitle(f"{'NumPy' if args.numpy else 'PyTorch'} training curves")
+    fig.suptitle(
+        f"{'NumPy' if args.numpy else 'PyTorch'} training curves"
+        " for simple MLP with hidden dimensionality of (128)"
+    )
 
     fig.set_tight_layout(True)
     plt.show()
