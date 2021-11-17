@@ -22,6 +22,7 @@ from __future__ import division
 from __future__ import print_function
 
 import pickle
+import argparse
 
 import numpy as np
 import os
@@ -101,14 +102,14 @@ def plot_results(results_filename):
                 epochs,
                 results[False][tuple(dims)]["accuracy"][phase],
                 label="No Batch Norm",
-                color="black" if phase == "train" else "darkblue",
+                color="black" if phase == "train" else "red",
                 linestyle="solid",
             )
             ax.plot(
                 epochs,
                 results[True][tuple(dims)]["accuracy"][phase],
                 label="With Batch Norm",
-                color="black" if phase == "train" else "darkblue",
+                color="black" if phase == "train" else "red",
                 linestyle="dashed",
             )
             ax.set_xlabel("Epoch")
@@ -130,7 +131,19 @@ def plot_results(results_filename):
 
 if __name__ == "__main__":
     # Feel free to change the code below as you need it.
-    FILENAME = "output/compare_results.pkl"
-    # if not os.path.isfile(FILENAME):
-    #     train_models(FILENAME)
+
+    parser = argparse.ArgumentParser(
+        description="Performs basic hyperparameter search and plots results"
+    )
+    parser.add_argument(
+        "-rf",
+        "--results-filename",
+        type=str,
+        default="output/compare_results.pkl",
+        help="path to pickle file where to store and read the results",
+    )
+    args = parser.parse_args()
+    FILENAME = args.results_filename
+    if not os.path.isfile(FILENAME):
+        train_models(FILENAME)
     plot_results(FILENAME)
