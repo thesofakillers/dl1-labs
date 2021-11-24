@@ -23,6 +23,7 @@ class LSTM(nn.Module):
     """
     Own implementation of LSTM cell.
     """
+
     def __init__(self, lstm_hidden_dim, embedding_size):
         """
         Initialize all parameters of the LSTM class.
@@ -97,6 +98,7 @@ class TextGenerationModel(nn.Module):
     It should take care of the character embedding,
     and linearly maps the output of the LSTM to your vocabulary.
     """
+
     def __init__(self, args):
         """
         Initializing the components of the TextGenerationModel.
@@ -139,7 +141,7 @@ class TextGenerationModel(nn.Module):
         # END OF YOUR CODE    #
         #######################
 
-    def sample(self, batch_size=4, sample_length=30, temperature=0.):
+    def sample(self, batch_size=4, sample_length=30, temperature=0.0):
         """
         Sampling from the text generation model.
 

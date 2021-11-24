@@ -39,7 +39,7 @@ class MLP(nn.Module):
                     will simply perform a multinomial logistic regression.
           n_outputs: This number is required in order to specify the
                      output dimensions of the MLP
-        TODO: 
+        TODO:
         - define a simple MLP that operates on properly formatted QM9 data
         """
 
@@ -55,7 +55,7 @@ class MLP(nn.Module):
         """
         Performs forward pass of the input. Here an input tensor x is transformed through
         several layer transformations.
-        
+
         Args:
             x: input to the network
         Returns:
@@ -80,8 +80,7 @@ class MLP(nn.Module):
 
 
 class GNN(nn.Module):
-    """implements a graphical neural network in pytorch. In particular, we will use pytorch geometric's nn_conv module so we can apply a neural network to the edges.
-    """
+    """implements a graphical neural network in pytorch. In particular, we will use pytorch geometric's nn_conv module so we can apply a neural network to the edges."""
 
     def __init__(
         self,
@@ -99,8 +98,8 @@ class GNN(nn.Module):
             n_hidden: hidden features within the neural networks (embeddings, nodes after graph convolutions, etc.)
             n_output: how many output features
             num_convolution_blocks: how many blocks convolutions should be performed. A block may include multiple convolutions
-        
-        TODO: 
+
+        TODO:
         - define a GNN which has the following structure: node embedding -> [ReLU -> RGCNConv -> ReLU -> MFConv] x num_convs -> Add-Pool -> Linear -> ReLU -> Linear
         - One the data has been pooled, it may be beneficial to apply another MLP on the pooled data before predicing the output.
         """
@@ -138,7 +137,7 @@ class GNN(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        
+
         #######################
         # END OF YOUR CODE    #
         #######################

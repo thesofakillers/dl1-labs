@@ -52,7 +52,7 @@ def contrast_transform(severity=1):
         severity: Scale of the corruption to use, has to be between 1 and 5.
     """
     c = [0.75, 0.6, 0.5, 0.4, 0.3][severity - 1]
-    return transforms.ColorJitter(contrast=(c,c))
+    return transforms.ColorJitter(contrast=(c, c))
 
 
 def jpeg_transform(severity=1):
@@ -72,9 +72,9 @@ class GaussianNoiseTransformation(object):
     To be used within a torch transformation composition.
     """
 
-    def __init__(self, std=1.):
+    def __init__(self, std=1.0):
         self.std = std
-        
+
     def __call__(self, img):
         img = img + torch.randn_like(img) * self.std
         img = img.clamp_(min=0, max=1)

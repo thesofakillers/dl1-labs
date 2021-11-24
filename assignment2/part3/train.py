@@ -70,12 +70,12 @@ def compute_loss(
     Args:
         model: trainable network
         molecules: batch of molecules from pytorch geometric
-        criterion: callable which takes a prediction and the ground truth 
+        criterion: callable which takes a prediction and the ground truth
 
     Returns:
         loss
 
-    TODO: 
+    TODO:
     - conditionally compute loss based on model type
     - make sure there are no warnings / errors
     """
@@ -104,9 +104,9 @@ def evaluate_model(
     Returns:
         avg_loss: scalar float, the average loss of the model on the dataset.
 
-    Hint: make sure to return the average loss of the whole dataset, 
+    Hint: make sure to return the average loss of the whole dataset,
           independent of batch sizes (not all batches might be the same size).
-    
+
     TODO: conditionally permute indices
           calculate loss
           average loss independent of batch sizes
@@ -147,12 +147,12 @@ def train(
     TODO:
     - Implement the training of both the mlp and the gnn in the same function
     - Evaluate your model on the whole validation set each epoch.
-    - After finishing training, evaluate your model that performed best on the validation set, 
+    - After finishing training, evaluate your model that performed best on the validation set,
       on the whole test dataset.
     - Integrate _all_ input arguments of this function in your training. You are allowed to add
       additional input argument if you assign it a default value that represents the plain training
       (e.g. '..., new_param=False')
-    
+
     Hint: you can save your best model by deepcopy-ing it.
     """
     # Set the random seeds for reproducibility
