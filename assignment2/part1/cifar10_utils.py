@@ -109,3 +109,71 @@ def get_test_set(data_dir, augmentation=None):
         root=data_dir, train=False, download=True, transform=test_transform
     )
     return test_dataset
+
+
+def get_dataset(data_dir: str):
+    """
+    Returns the training, validation and test set of CIFAR10.
+
+    Parameters
+    ----------
+    data_dir : str
+        Directory where the data should be stored.
+
+    Returns
+    -------
+    dataset : dict
+        dict with keys "train", "val" and "test",
+        each containing corresponding torch.utils.data.Dataset object.
+    """
+    train_set, val_set = get_train_validation_set(data_dir)
+    test_set = get_test_set(data_dir)
+    dataset = {
+        "train": train_set,
+        "val": val_set,
+        "test": test_set,
+    }
+    return dataset
+
+
+def get_dataloader(dataset: dict, batch_size: int):
+    """
+    Returns a dict of train, val, test dataloaders
+    for the given dataset dictionary
+
+    Parameters
+    ----------
+    dataset : dict
+        dict with keys "train", "val" and "test",
+        each containing corresponding torch.utils.data.Dataset object.
+    batch_size : int
+
+    Returns
+    -------
+    dataloader : dict
+        dict with keys "train", "val" and "test",
+        each containing corresponding torch.utils.data.DataLoader object.
+    """
+    train_dataloader = DataLoader(
+        dataset=dataset["train"],
+        batch_size=batch_size,
+        shuffle=True,
+        drop_last=True,
+    )
+    validation_dataloader = DataLoader(
+        dataset=dataset["val"],
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+    )
+    test_dataloader = DataLoader(
+        dataset=dataset["test"],
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+    )
+    return {
+        "train": train_dataloader,
+        "validation": validation_dataloader,
+        "test": test_dataloader,
+    }
