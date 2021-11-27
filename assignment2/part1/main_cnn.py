@@ -358,8 +358,8 @@ def main(model_name, lr, batch_size, epochs, data_dir, seed):
     # instantiate untrained model
     model = get_model(model_name, 10)
     model = model.to(device)
-    save_name = f"{model_name}_lr{lr}_bs{batch_size}_e{epochs}_s{seed}"
-    checkpoint_name = f"cpt_{save_name}.pth"
+    save_name = f"{model_name}-lr{lr}-bs{batch_size}-e{epochs}-s{seed}"
+    checkpoint_name = f"cpt-{save_name}.pth"
     # check if model already trained
     already_trained: bool = os.path.isfile(checkpoint_name)
     if already_trained:
@@ -377,7 +377,7 @@ def main(model_name, lr, batch_size, epochs, data_dir, seed):
     test_results = test_model(model, batch_size, data_dir, device, seed)
     # save the results to disk
     print("Testing complete. Saving results to disk")
-    with open(f"results_{save_name}.pkl", "wb") as f:
+    with open(f"results-{save_name}.pkl", "wb") as f:
         pickle.dump(test_results, f)
     return test_results
     #######################
