@@ -161,12 +161,14 @@ def train_model(model, lr, batch_size, epochs, data_dir, checkpoint_name, device
             batch_size=batch_size,
             shuffle=True,
             drop_last=True,
+            pin_memory=True,
         ),
         "val": data.DataLoader(
             val_set,
             batch_size=batch_size,
             shuffle=False,
             drop_last=False,
+            pin_memory=True,
         ),
     }
     # Initialize the optimizers and learning rate scheduler.
@@ -303,14 +305,18 @@ def test_model(model, batch_size, data_dir, device, seed):
             with Suppress(suppress_stdout=True):
                 test_set = get_test_set(data_dir, aug_func(severity))
                 test_loader = data.DataLoader(
-                    test_set, batch_size=batch_size, shuffle=False, drop_last=False
+                    test_set,
+                    batch_size=batch_size,
+                    shuffle=False,
+                    drop_last=False,
+                    pin_memory=True,
                 )
             test_results[aug_func_name][s] = evaluate_model(model, test_loader, device)
     # repeat the test on the plain test set
     print("Testing on plain test set")
     test_set = get_test_set(data_dir)
     test_loader = data.DataLoader(
-        test_set, batch_size=batch_size, shuffle=False, drop_last=False
+        test_set, batch_size=batch_size, shuffle=False, drop_last=False, pin_memory=True
     )
     test_results["plain"] = evaluate_model(model, test_loader, device)
     #######################
@@ -351,6 +357,7 @@ def main(model_name, lr, batch_size, epochs, data_dir, seed):
     )
     # instantiate untrained model
     model = get_model(model_name, 10)
+    model = model.to(device)
     save_name = f"{model_name}_lr{lr}_bs{batch_size}_e{epochs}_s{seed}"
     checkpoint_name = f"cpt_{save_name}.pth"
     # check if model already trained
