@@ -95,16 +95,13 @@ def plot_part_b(args):
                 model_dict[model]["plain"]["test_accuracy"],
                 model_dict["resnet18"]["plain"]["test_accuracy"],
             )
-    # plt.style.use('grayscale')
     # plot
     fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
     axes = axes.flatten()
     bar_pos = np.arange(len(eval_models))
     bar_width = 0.35 / 2
     colors = plt.get_cmap("Blues_r")(np.linspace(0, 0.85, len(corr_funcs)))
-    # colors = ["#9c9ca1", "#f89c20", "#e42536", "#964a8b"]
     for score, ax in zip(["CE", "RCE"], axes):
-        # ax.set_prop_cycle(color=plt.get_cmap('tab20c').colors)
         for i, (func, mult) in enumerate(zip(corr_funcs, [-3, -1, 1, 3])):
             model_scores = [model_dict[model][func][score] for model in eval_models]
             ax.barh(
