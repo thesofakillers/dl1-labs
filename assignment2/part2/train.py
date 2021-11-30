@@ -23,9 +23,41 @@ import numpy as np
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
+
 
 from dataset import TextDataset, text_collate_fn
 from model import TextGenerationModel
+
+
+def get_accuracy(predictions, targets):
+    """
+    Computes the prediction accuracy, i.e. the average of correct predictions
+    of the network.
+
+    Parameters
+    ----------
+    predictions : torch.Tensor
+        2D float array of size [batch_size, n_classes]
+    targets : np.ndarray
+        1D int array of size [batch_size]. Ground truth labels for
+        each sample in the batch
+
+    Returns
+    -------
+    accuracy : float
+        the accuracy of predictions,
+        i.e. the average correct predictions over the whole batch
+    """
+    #######################
+    # PUT YOUR CODE HERE  #
+    #######################
+    y_pred = predictions.argmax(dim=1)
+    accuracy = (y_pred == targets).float().mean()
+    #######################
+    # END OF YOUR CODE    #
+    #######################
+    return accuracy
 
 
 def set_seed(seed):
@@ -45,27 +77,18 @@ def train(args):
     """
     Trains an LSTM model on a text dataset
 
-    Args:
-        args: Namespace object of the command line arguments as
-              specified in the main function.
-
-    TODO:
-    Create the dataset.
-    Create the model and optimizer (we recommend Adam as optimizer).
-    Define the operations for the training loop here.
-    Call the model forward function on the inputs,
-    calculate the loss with the targets and back-propagate,
-    Also make use of gradient clipping before the gradient step.
-    Recommendation: you might want to try out Tensorboard for logging your experiments.
+    Parameters
+    args : Namespace
+        object of the command line arguments as
+        specified in the main function.
     """
     #######################
     # PUT YOUR CODE HERE  #
     #######################
     set_seed(args.seed)
-    # Load dataset
-    # The data loader returns pairs of tensors (input, targets) where inputs are the
-    # input characters, and targets the labels, i.e. the text shifted by one.
     dataset = TextDataset(args.txt_file, args.input_seq_length)
+    # needed for our TextGenerationModel
+    args.vocabulary_size = dataset._vocabulary_size
     data_loader = DataLoader(
         dataset,
         args.batch_size,
@@ -74,12 +97,52 @@ def train(args):
         pin_memory=True,
         collate_fn=text_collate_fn,
     )
-    # Create model
-    model = ...
-    # Create optimizer
-    optimizer = ...
+    # initialization
+    model = TextGenerationModel(args).to(args.device)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    loss_module = nn.CrossEntropyLoss().to(args.device)
+    writer = SummaryWriter()
     # Training loop
-    pass
+    model.train()
+    for epoch in range(args.num_epochs):
+        epoch_loss = 0
+        epoch_accuracy = 0
+        n_batches = len(data_loader)
+        with tqdm(data_loader, unit="batch") as curr_epoch:
+            for features_X, true_y in curr_epoch:
+                curr_epoch.set_description(f"Epoch {epoch+1}/{args.num_epochs}")
+                # move to GPU if available
+                features_X = features_X.to(args.device)
+                true_y = true_y.to(args.device)
+                # zero the parameter gradients
+                optimizer.zero_grad()
+                # forward
+                y_pred = model.forward(features_X)
+                # reshape sequence tensors for loss
+                true_y = true_y.view(-1)
+                y_pred = y_pred.view(-1, y_pred.shape[-1])
+                # calculate and record loss and accuracy
+                loss = loss_module(y_pred, true_y)
+                epoch_loss += loss.item() / n_batches
+                epoch_accuracy += get_accuracy(y_pred, true_y) / n_batches
+                # # backward pass
+                loss.backward()
+                # clip gradients
+                nn.utils.clip_grad_norm_(model.parameters(), args.clip_grad_norm)
+                # update parameters
+                optimizer.step()
+                # reset hidden/cell states
+                model.lstm.h = None
+                model.lstm.c = None
+            writer.add_scalar("Loss/train", epoch_loss, epoch)
+            writer.add_scalar("Accuracy/train", epoch_accuracy, epoch)
+            # generate sentences at different stages of training
+            if epoch in {0, 4, args.num_epochs - 1}:
+                # save a checkpoint of the model, for sampling from later
+                book_name = args.txt_file.split("/")[-1].split(".")[0]
+                checkpoint_path = f"{book_name}-lstm-e{epoch+1}.pth"
+                with open(checkpoint_path, "wb") as f:
+                    torch.save(model.state_dict(), f)
     #######################
     # END OF YOUR CODE    #
     #######################
