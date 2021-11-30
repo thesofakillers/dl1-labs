@@ -28,12 +28,12 @@ class LSTM(nn.Module):
         """
         Initialize all parameters of the LSTM class.
 
-        Args:
-            lstm_hidden_dim: hidden state dimension.
-            embedding_size: size of embedding (and hence input sequence).
-
-        TODO:
-        Define all necessary parameters in the init function as properties of the LSTM class.
+        Parameters
+        ----------
+        lstm_hidden_dim : int
+            hidden state dimension.
+        embedding_size : int
+            size of embedding (and hence input sequence).
         """
         super(LSTM, self).__init__()
         self.hidden_dim = lstm_hidden_dim
@@ -41,7 +41,37 @@ class LSTM(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        # embedding weights
+        self.w_gx = nn.Parameter(
+            torch.zeros(self.hidden_dim, self.embed_dim), requires_grad=True
+        )
+        self.w_ix = nn.Parameter(
+            torch.zeros(self.hidden_dim, self.embed_dim), requires_grad=True
+        )
+        self.w_fx = nn.Parameter(
+            torch.zeros(self.hidden_dim, self.embed_dim), requires_grad=True
+        )
+        self.w_ox = nn.Parameter(
+            torch.zeros(self.hidden_dim, self.embed_dim), requires_grad=True
+        )
+        # hidden weights
+        self.w_gh = nn.Parameter(
+            torch.zeros(self.hidden_dim, self.hidden_dim), requires_grad=True
+        )
+        self.w_ih = nn.Parameter(
+            torch.zeros(self.hidden_dim, self.hidden_dim), requires_grad=True
+        )
+        self.w_fh = nn.Parameter(
+            torch.zeros(self.hidden_dim, self.hidden_dim), requires_grad=True
+        )
+        self.w_oh = nn.Parameter(
+            torch.zeros(self.hidden_dim, self.hidden_dim), requires_grad=True
+        )
+        # bias
+        self.b_g = nn.Parameter(torch.zeros(self.hidden_dim), requires_grad=True)
+        self.b_i = nn.Parameter(torch.zeros(self.hidden_dim), requires_grad=True)
+        self.b_f = nn.Parameter(torch.zeros(self.hidden_dim), requires_grad=True)
+        self.b_o = nn.Parameter(torch.zeros(self.hidden_dim), requires_grad=True)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -51,19 +81,21 @@ class LSTM(nn.Module):
         """
         Parameters initialization.
 
-        Args:
-            self.parameters(): list of all parameters.
-            self.hidden_dim: hidden state dimension.
-
-        TODO:
-        Initialize all your above-defined parameters,
-        with a uniform distribution with desired bounds (see exercise sheet).
-        Also, add one (1.) to the uniformly initialized forget gate-bias.
+        Parameters
+        ----------
+        self.parameters: list of all parameters.
+        self.hidden_dim: hidden state dimension.
         """
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        for param in self.parameters():
+            # initialize weights as specified by inst
+            nn.init.uniform_(
+                param, -1 / math.sqrt(self.hidden_dim), 1 / math.sqrt(self.hidden_dim)
+            )
+        # add one to forget gate bias
+        self.b_f += 1
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -72,21 +104,36 @@ class LSTM(nn.Module):
         """
         Forward pass of LSTM.
 
-        Args:
-            embeds: embedded input sequence with shape [input length, batch size, hidden dimension].
+        Parameters
+        ----------
+        embeds : array-like
+            embedded input sequence with shape
+            (input length, batch size, embedding_size)
 
-        TODO:
-          Specify the LSTM calculations on the input sequence.
-        Hint:
-        The output needs to span all time steps, (not just the last one),
-        so the output shape is [input length, batch size, hidden dimension].
+        Returns
+        -------
+        output : array-like
+            output of LSTM with shape
+            (input length, batch size, hidden_size)
         """
-        #
         #
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+
+        # initialize hidden state
+        output = torch.zeros_like(embeds)
+        h = torch.zeros(embeds.shape[1], self.hidden_dim)
+        c = torch.zeros(embeds.shape[1], self.hidden_dim)
+        for i, seq_el in enumerate(embeds):
+            g = torch.tanh(seq_el @ self.w_gx.T + h @ self.w_gh.T + self.b_g)
+            i = torch.sigmoid(seq_el @ self.w_ix.T + h @ self.w_ih.T + self.b_i)
+            f = torch.sigmoid(seq_el @ self.w_fx.T + h @ self.w_fh.T + self.b_f)
+            o = torch.sigmoid(seq_el @ self.w_ox.T + h @ self.w_oh.T + self.b_o)
+            c = g * i + c * f
+            h = torch.tanh(c) * o
+            output[i] = h
+        return output
         #######################
         # END OF YOUR CODE    #
         #######################
