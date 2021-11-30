@@ -220,7 +220,6 @@ class TextGenerationModel(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
         # initialize characters randomly
         chars = torch.randint(self.vocabulary_size, (sample_length, batch_size))
 
@@ -239,7 +238,6 @@ class TextGenerationModel(nn.Module):
             chars[step] = new_char
 
         return chars
-
         #######################
         # END OF YOUR CODE    #
         #######################
