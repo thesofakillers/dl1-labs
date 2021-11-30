@@ -42,36 +42,20 @@ class LSTM(nn.Module):
         # PUT YOUR CODE HERE  #
         #######################
         # embedding weights
-        self.w_gx = nn.Parameter(
-            torch.zeros(self.hidden_dim, self.embed_dim), requires_grad=True
+        self.w_x = nn.Parameter(
+            torch.zeros(4 * self.hidden_dim, self.embed_dim), requires_grad=True
         )
-        self.w_ix = nn.Parameter(
-            torch.zeros(self.hidden_dim, self.embed_dim), requires_grad=True
-        )
-        self.w_fx = nn.Parameter(
-            torch.zeros(self.hidden_dim, self.embed_dim), requires_grad=True
-        )
-        self.w_ox = nn.Parameter(
-            torch.zeros(self.hidden_dim, self.embed_dim), requires_grad=True
-        )
-        # hidden weights
-        self.w_gh = nn.Parameter(
-            torch.zeros(self.hidden_dim, self.hidden_dim), requires_grad=True
-        )
-        self.w_ih = nn.Parameter(
-            torch.zeros(self.hidden_dim, self.hidden_dim), requires_grad=True
-        )
-        self.w_fh = nn.Parameter(
-            torch.zeros(self.hidden_dim, self.hidden_dim), requires_grad=True
-        )
-        self.w_oh = nn.Parameter(
-            torch.zeros(self.hidden_dim, self.hidden_dim), requires_grad=True
+        self.w_h = nn.Parameter(
+            torch.zeros(4 * self.hidden_dim, self.hidden_dim), requires_grad=True
         )
         # bias
         self.b_g = nn.Parameter(torch.zeros(self.hidden_dim), requires_grad=True)
         self.b_i = nn.Parameter(torch.zeros(self.hidden_dim), requires_grad=True)
         self.b_f = nn.Parameter(torch.zeros(self.hidden_dim), requires_grad=True)
         self.b_o = nn.Parameter(torch.zeros(self.hidden_dim), requires_grad=True)
+        # cell and hidden state
+        self.h = None
+        self.c = None
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -96,7 +80,7 @@ class LSTM(nn.Module):
             )
         # add one to forget gate bias
         with torch.no_grad():
-            self.b_f.add_(1)
+            self.b_f += 1
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -122,18 +106,25 @@ class LSTM(nn.Module):
         # PUT YOUR CODE HERE  #
         #######################
 
-        # initialize hidden state
+        # initialize output
         output = torch.zeros((embeds.shape[0], embeds.shape[1], self.hidden_dim))
-        h = torch.zeros(embeds.shape[1], self.hidden_dim)
-        c = torch.zeros(embeds.shape[1], self.hidden_dim)
+        # initialize hidden and cell states if necessary
+        if self.h is None:
+            self.h = torch.zeros(embeds.shape[1], self.hidden_dim, requires_grad=False)
+        if self.c is None:
+            self.c = torch.zeros(embeds.shape[1], self.hidden_dim, requires_grad=False)
+        # LSTM computation
         for j, seq_el in enumerate(embeds):
-            g = torch.tanh(seq_el @ self.w_gx.T + h @ self.w_gh.T + self.b_g)
-            i = torch.sigmoid(seq_el @ self.w_ix.T + h @ self.w_ih.T + self.b_i)
-            f = torch.sigmoid(seq_el @ self.w_fx.T + h @ self.w_fh.T + self.b_f)
-            o = torch.sigmoid(seq_el @ self.w_ox.T + h @ self.w_oh.T + self.b_o)
-            c = g * i + c * f
-            h = torch.tanh(c) * o
-            output[j] = h
+            biases = torch.hstack((self.b_i, self.b_f, self.b_o, self.b_g))
+            opt_mult = seq_el @ self.w_x.T + self.h @ self.w_h.T + biases
+            i, f, o, g = torch.chunk(opt_mult, 4, dim=1)
+            g = torch.tanh(g)
+            i = torch.sigmoid(i)
+            f = torch.sigmoid(f)
+            o = torch.sigmoid(o)
+            self.c = g * i + self.c * f
+            self.h = torch.tanh(self.c) * o
+            output[j] = self.h
         return output
         #######################
         # END OF YOUR CODE    #
@@ -226,15 +217,15 @@ class TextGenerationModel(nn.Module):
 
         # overwrite all chars except first with sampled characters
         for step in range(1, sample_length):
-            # getting char predicted for current step, using previous steps
-            pred = self.forward(chars[:step])[-1]
+            # use previous step, hidden/cell state are stored and kept track of BTS
+            pred = self.forward(chars[step - 1])[-1]
             # pred is of shape (1, batch_size, vocabulary_size)
             if temperature == 0:
                 # argmax gives (1, batch_size)
                 new_char = pred.argmax(dim=-1)
             else:
                 # randomly sample using temperature-scaled softmax weights
-                new_char = torch.utils.data.WeightedRandomSampler(
+                new_char = torch.multinomial(
                     torch.softmax(pred / temperature, dim=-1), 1
                 )
             # save new char to the current step
