@@ -95,7 +95,8 @@ class LSTM(nn.Module):
                 param, -1 / math.sqrt(self.hidden_dim), 1 / math.sqrt(self.hidden_dim)
             )
         # add one to forget gate bias
-        self.b_f += 1
+        with torch.no_grad():
+            self.b_f.add_(1)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -122,17 +123,17 @@ class LSTM(nn.Module):
         #######################
 
         # initialize hidden state
-        output = torch.zeros_like(embeds)
+        output = torch.zeros((embeds.shape[0], embeds.shape[1], self.hidden_dim))
         h = torch.zeros(embeds.shape[1], self.hidden_dim)
         c = torch.zeros(embeds.shape[1], self.hidden_dim)
-        for i, seq_el in enumerate(embeds):
+        for j, seq_el in enumerate(embeds):
             g = torch.tanh(seq_el @ self.w_gx.T + h @ self.w_gh.T + self.b_g)
             i = torch.sigmoid(seq_el @ self.w_ix.T + h @ self.w_ih.T + self.b_i)
             f = torch.sigmoid(seq_el @ self.w_fx.T + h @ self.w_fh.T + self.b_f)
             o = torch.sigmoid(seq_el @ self.w_ox.T + h @ self.w_oh.T + self.b_o)
             c = g * i + c * f
             h = torch.tanh(c) * o
-            output[i] = h
+            output[j] = h
         return output
         #######################
         # END OF YOUR CODE    #
@@ -150,10 +151,11 @@ class TextGenerationModel(nn.Module):
         """
         Initializing the components of the TextGenerationModel.
 
-        Args:
-            args.vocabulary_size: The size of the vocabulary.
-            args.embedding_size: The size of the embedding.
-            args.lstm_hidden_dim: The dimension of the hidden state in the LSTM cell.
+        Parameters
+        ----------
+        args.vocabulary_size: The size of the vocabulary.
+        args.embedding_size: The size of the embedding.
+        args.lstm_hidden_dim: The dimension of the hidden state in the LSTM cell.
 
         TODO:
         Define the components of the TextGenerationModel,
@@ -209,3 +211,13 @@ class TextGenerationModel(nn.Module):
         #######################
         # END OF YOUR CODE    #
         #######################
+
+
+if __name__ == "__main__":
+    hidden_dim = 5
+    embed_size = 10
+    batch_n = 3
+
+    lstm = LSTM(hidden_dim, embed_size)
+    out = lstm.forward(torch.randn(2, batch_n, embed_size))
+    print(out.shape)
