@@ -153,19 +153,20 @@ class TextGenerationModel(nn.Module):
 
         Parameters
         ----------
-        args.vocabulary_size: The size of the vocabulary.
-        args.embedding_size: The size of the embedding.
-        args.lstm_hidden_dim: The dimension of the hidden state in the LSTM cell.
-
-        TODO:
-        Define the components of the TextGenerationModel,
-        namely the embedding, the LSTM cell and the linear classifier.
+        args.vocabulary_size: int
+            The size of the vocabulary.
+        args.embedding_size: int
+            The size of the embedding.
+        args.lstm_hidden_dim: int
+            The dimension of the hidden state in the LSTM cell.
         """
         super(TextGenerationModel, self).__init__()
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        self.embedding = nn.Embedding(args.vocabulary_size, args.embedding_size)
+        self.lstm = LSTM(args.lstm_hidden_dim, args.embedding_size)
+        self.linear = nn.Linear(args.lstm_hidden_dim, args.vocabulary_size)
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -174,18 +175,21 @@ class TextGenerationModel(nn.Module):
         """
         Forward pass.
 
-        Args:
-            x: input
-
-        TODO:
-        Embed the input,
-        apply the LSTM cell
-        and linearly map to vocabulary size.
+        Parameters
+        ----------
+        x : array-like
+            input sequence with shape (seq_len, batch_size)
         """
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        # embedding gives (seq_len, batch_size, embedding_size)
+        x = self.embedding(x)
+        # lstm forward gives (seq_len, batch_size, hidden_size)
+        x = self.lstm(x)
+        # linear forward gives (seq_len, batch_size, vocabulary_size)
+        out = self.linear(x)
+        return out
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -194,10 +198,19 @@ class TextGenerationModel(nn.Module):
         """
         Sampling from the text generation model.
 
-        Args:
-            batch_size: Number of samples to return
-            sample_length: length of desired sample.
-            temperature: temperature of the sampling process (see exercise sheet for definition).
+        Parameters
+        ----------
+        batch_size : int
+            Number of samples to return
+        sample_length : int
+            length of desired sample.
+        temperature: float
+            temperature of the sampling process (see exercise sheet for definition).
+
+        Returns
+        -------
+        samples : array-like
+            samples with shape (sample_length, batch_size)
 
         TODO:
         Generate sentences by sampling from the model, starting with a random character.
@@ -207,7 +220,26 @@ class TextGenerationModel(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+
+        # initialize characters randomly
+        chars = torch.randint(self.vocabulary_size, (sample_length, batch_size))
+
+        # overwrite all chars except first with sampled characters
+        for step in range(1, sample_length):
+            # getting char predicted for current step, using previous steps
+            pred = self.forward(chars[:step])[-1]
+            # pred is of shape (1, batch_size, vocabulary_size)
+            if temperature == 0:
+                # argmax gives (1, batch_size)
+                new_char = pred.argmax(dim=-1)
+            else:
+                # TODO: check this implementation
+                new_char = torch.softmax(pred / temperature, dim=-1)
+            # save new char to the current step
+            chars[step] = new_char
+
+        return chars
+
         #######################
         # END OF YOUR CODE    #
         #######################
