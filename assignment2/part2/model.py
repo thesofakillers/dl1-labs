@@ -203,11 +203,6 @@ class TextGenerationModel(nn.Module):
         -------
         samples : array-like
             samples with shape (sample_length, batch_size)
-
-        TODO:
-        Generate sentences by sampling from the model, starting with a random character.
-        If the temperature is 0, the function should default to argmax sampling,
-        else to softmax sampling with specified temperature.
         """
         #######################
         # PUT YOUR CODE HERE  #
