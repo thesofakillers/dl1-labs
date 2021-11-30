@@ -167,6 +167,7 @@ class TextGenerationModel(nn.Module):
         self.embedding = nn.Embedding(args.vocabulary_size, args.embedding_size)
         self.lstm = LSTM(args.lstm_hidden_dim, args.embedding_size)
         self.linear = nn.Linear(args.lstm_hidden_dim, args.vocabulary_size)
+        self.vocabulary_size = args.vocabulary_size
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -232,8 +233,10 @@ class TextGenerationModel(nn.Module):
                 # argmax gives (1, batch_size)
                 new_char = pred.argmax(dim=-1)
             else:
-                # TODO: check this implementation
-                new_char = torch.softmax(pred / temperature, dim=-1)
+                # randomly sample using temperature-scaled softmax weights
+                new_char = torch.utils.data.WeightedRandomSampler(
+                    torch.softmax(pred / temperature, dim=-1), 1
+                )
             # save new char to the current step
             chars[step] = new_char
 
