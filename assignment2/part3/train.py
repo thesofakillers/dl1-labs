@@ -84,10 +84,6 @@ def compute_loss(
     -------
     loss : torch.Tensor
         scalar tensor of the loss
-
-    TODO:
-    - conditionally compute loss based on model type
-    - make sure there are no warnings / errors
     """
 
     #######################
@@ -101,11 +97,18 @@ def compute_loss(
         features_X = features_X.to(model.device)
         # forward
         pred_y = model(features_X).squeeze()
-        # compute loss
-        loss = criterion(pred_y, true_y)
-
     elif isinstance(model, GNN):
-        raise NotImplementedError()
+        features_X = get_node_features(molecules)
+        features_X = features_X.to(model.device)
+        # forward
+        pred_y = model(
+            features_X,
+            molecules.edge_index,
+            molecules.edge_attr.argmax(dim=-1),
+            molecules.batch,
+        ).squeeze()
+    # compute loss
+    loss = criterion(pred_y, true_y)
     #######################
     # END OF YOUR CODE    #
     #######################
