@@ -20,7 +20,7 @@ def main(**kwargs):
     # plot
     plt.figure(figsize=(10, 5))
     epochs = np.arange(1, len(val_losses) + 1)
-    plt.plot(epochs, val_losses, label="Validation Loss", marker="o")
+    plt.plot(epochs, val_losses, label="Validation Loss", marker="o", color='black')
     plt.ylabel("Average Epoch Loss")
     plt.xlabel("Epoch Number")
     plt.legend()
