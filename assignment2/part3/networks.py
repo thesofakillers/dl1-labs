@@ -93,7 +93,11 @@ class MLP(nn.Module):
 
 
 class GNN(nn.Module):
-    """implements a graphical neural network in pytorch. In particular, we will use pytorch geometric's nn_conv module so we can apply a neural network to the edges."""
+    """
+    implements a graph neural network in pytorch.
+    In particular, we will use pytorch geometric's
+    nn_conv module so we can apply a neural network to the edges.
+    """
 
     def __init__(
         self,
@@ -103,24 +107,44 @@ class GNN(nn.Module):
         n_output: int,
         num_convolution_blocks: int,
     ) -> None:
-        """create the gnn
+        """
+        Initializes a GNN with the following structure:
+        node embedding -> [ReLU -> RGCNConv -> ReLU -> MFConv] x num_convs -> Add-Pool -> Linear -> ReLU -> Linear
 
-        Args:
-            n_node_features: input features on each node
-            n_edge_features: input features on each edge
-            n_hidden: hidden features within the neural networks (embeddings, nodes after graph convolutions, etc.)
-            n_output: how many output features
-            num_convolution_blocks: how many blocks convolutions should be performed. A block may include multiple convolutions
-
-        TODO:
-        - define a GNN which has the following structure: node embedding -> [ReLU -> RGCNConv -> ReLU -> MFConv] x num_convs -> Add-Pool -> Linear -> ReLU -> Linear
-        - One the data has been pooled, it may be beneficial to apply another MLP on the pooled data before predicing the output.
+        Parameters
+        ----------
+        n_node_features : int
+            number of input features on each node
+        n_edge_features : int
+            number of input features on each edge
+        n_hidden : int
+            number of hidden features within the neural networks
+            (embeddings, nodes after graph convolutions, etc.)
+        n_output : int
+            how many output features
+        num_convolution_blocks : int
+            how many blocks convolutions should be performed. A block may include multiple convolutions
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        super(GNN, self).__init__()
+        self.embedding = nn.Linear(n_node_features, n_hidden)
+        self.GNN = nn.ModuleList([])
+        for i in range(num_convolution_blocks):
+            conv_block = nn.ModuleList(
+                [
+                    nn.ReLU(),
+                    geom_nn.RGCNConv(n_hidden, n_hidden, n_edge_features),
+                    nn.ReLU(),
+                    geom_nn.MFConv(n_hidden, n_hidden),
+                ]
+            )
+            self.GNN.append(conv_block)
+        self.head = nn.Sequential(
+            nn.Linear(n_hidden, n_hidden), nn.ReLU(), nn.Linear(n_hidden, n_output)
+        )
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -133,24 +157,37 @@ class GNN(nn.Module):
         batch_idx: torch.Tensor,
     ) -> torch.Tensor:
         """
-        Args:
-            x: Input features per node
-            edge_index: List of vertex index pairs representing the edges in the graph (PyTorch geometric notation)
-            edge_attr: edge attributes (pytorch geometric notation)
-            batch_idx: Index of batch element for each node
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input features per node
+        edge_index : torch.Tensor
+            List of vertex index pairs representing the edges in the graph
+            (PyTorch geometric notation)
+        edge_attr : torch.Tensor
+            edge attributes (pytorch geometric notation)
+        batch_idx : torch.Tensor
+            Index of batch element for each node
 
-        Returns:
-            prediction
-
-        TODO: implement the forward pass being careful to apply MLPs only where they are allowed!
-
-        Hint: remember to use global pooling.
+        Returns
+        -------
+        prediction : torch.Tensor
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-
+        x = self.embedding(x)
+        for block in self.GNN:
+            for layer in block:
+                if isinstance(layer, geom_nn.RGCNConv):
+                    x = layer(x, edge_index, edge_attr)
+                elif isinstance(layer, geom_nn.MFConv):
+                    x = layer(x, edge_index)
+                else:
+                    x = layer(x)
+        x = geom_nn.global_add_pool(x, batch_idx)
+        out = self.head(x)
         #######################
         # END OF YOUR CODE    #
         #######################
