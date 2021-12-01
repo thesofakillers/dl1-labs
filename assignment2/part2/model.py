@@ -106,13 +106,19 @@ class LSTM(nn.Module):
         # PUT YOUR CODE HERE  #
         #######################
 
-        # initialize output
-        output = torch.zeros((embeds.shape[0], embeds.shape[1], self.hidden_dim))
+        # initialize output, ensuring its on the same device as embeds
+        output = torch.zeros(
+            (embeds.shape[0], embeds.shape[1], self.hidden_dim), device=self.w_x.device
+        )
         # initialize hidden and cell states if necessary
         if self.h is None:
-            self.h = torch.zeros(embeds.shape[1], self.hidden_dim, requires_grad=False)
+            self.h = torch.zeros(
+                embeds.shape[1], self.hidden_dim, device=self.w_x.device
+            )
         if self.c is None:
-            self.c = torch.zeros(embeds.shape[1], self.hidden_dim, requires_grad=False)
+            self.c = torch.zeros(
+                embeds.shape[1], self.hidden_dim, device=self.w_h.device
+            )
         # LSTM computation
         for j, seq_el in enumerate(embeds):
             biases = torch.hstack((self.b_i, self.b_f, self.b_o, self.b_g))
