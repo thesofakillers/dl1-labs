@@ -143,6 +143,8 @@ def train(args):
                 checkpoint_path = f"{book_name}-lstm-e{epoch+1}.pth"
                 with open(checkpoint_path, "wb") as f:
                     torch.save(model.state_dict(), f)
+    writer.flush()
+    writer.close()
     #######################
     # END OF YOUR CODE    #
     #######################
