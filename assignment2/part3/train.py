@@ -35,11 +35,15 @@ from networks import *
 def permute_indices(molecules: Batch) -> Batch:
     """permute the atoms within a molecule, but not across molecules
 
-    Args:
-        molecules: batch of molecules from pytorch geometric
+    Parameters
+    ----------
+    molecules : Batch
+        batch of molecules from pytorch geometric
 
-    Returns:
-        permuted molecules
+    Returns
+    -------
+    permuted : Batch
+        the molecules with permuted atoms
     """
     # Permute the node indices within a molecule, but not across them.
     ranges = [
@@ -136,7 +140,6 @@ def evaluate_model(
     avg_loss : float
         the average loss of the model on the dataset.
     """
-
     #######################
     # PUT YOUR CODE HERE  #
     #######################
@@ -158,7 +161,8 @@ def evaluate_model(
 def train(
     model: nn.Module, lr: float, batch_size: int, epochs: int, seed: int, data_dir: str
 ):
-    """a full training cycle of an mlp / gnn on qm9.
+    """
+    a full training cycle of an mlp / gnn on qm9.
 
     Parameters
     ----------
