@@ -148,3 +148,24 @@ def get_mlp_features(molecules: Batch) -> torch.Tensor:
     dense_adj = get_dense_adj(molecules)
     x = torch.cat([z_one_hot.flatten(1), dense_adj.flatten(1)], dim=1)
     return x
+
+
+if __name__ == "__main__":
+    # answering 3.6a)
+    train, valid, test = get_qm9("data")
+
+    # for i in train[:5]:
+    i = train[0]
+    print(i)
+    print(i.x.shape)
+    print(i.x)
+    print(i.y.shape)
+    print(i.y)
+    print(i.pos)
+    print(i.z)
+
+    # for a given data entry
+    # data.x is the features of shape (num_nodes, num_node_features)
+    # data.y is the labels of shape (1, num_targets)
+    # data.z is the atomic number of shape (num_nodes)
+    # data.pos is the node "position matrix"
