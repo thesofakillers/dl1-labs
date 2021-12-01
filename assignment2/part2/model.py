@@ -219,7 +219,7 @@ class TextGenerationModel(nn.Module):
         # overwrite all chars except first with sampled characters
         for step in range(1, sample_length):
             # use previous step, hidden/cell state are stored and kept track of BTS
-            pred = self.forward(chars[step - 1])[-1]
+            pred = self.forward(chars[step - 1].view(1, -1))[-1]
             # pred is of shape (1, batch_size, vocabulary_size)
             if temperature == 0:
                 # argmax gives (1, batch_size)
@@ -228,7 +228,7 @@ class TextGenerationModel(nn.Module):
                 # randomly sample using temperature-scaled softmax weights
                 new_char = torch.multinomial(
                     torch.softmax(pred / temperature, dim=-1), 1
-                )
+                ).squeeze()
             # save new char to the current step
             chars[step] = new_char
 
