@@ -1,0 +1,103 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 30,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 0.0,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+book_EN_grimms_fairy_tails: Epoch 1
+
+Sample 1/5:
+----------
+Qut his hand to the third the 
+----------
+
+Sample 2/5:
+----------
+Ky the sear of the world and t
+----------
+
+Sample 3/5:
+----------
+$On the world and the sear who
+----------
+
+Sample 4/5:
+----------
+The work and the sear who was 
+----------
+
+Sample 5/5:
+----------
+When the forest and the sear w
+----------
+==================
+book_EN_grimms_fairy_tails: Epoch 5
+
+Sample 1/5:
+----------
+K, and the soldier saw that th
+----------
+
+Sample 2/5:
+----------
+began to be done there and saw
+----------
+
+Sample 3/5:
+----------
+le he had been a very good spr
+----------
+
+Sample 4/5:
+----------
+Med to be asked to be as befor
+----------
+
+Sample 5/5:
+----------
+30 despect that he would not b
+----------
+==================
+book_EN_grimms_fairy_tails: Epoch 20
+
+Sample 1/5:
+----------
+, satisfied his only one heard
+----------
+
+Sample 2/5:
+----------
+ng:
+
+ ‘My mother killed her li
+----------
+
+Sample 3/5:
+----------
+!’
+said the maid: ‘What a clev
+----------
+
+Sample 4/5:
+----------
+ured all the land. As he jogge
+----------
+
+Sample 5/5:
+----------
+feel
+something for all: and it
+----------
+==================
