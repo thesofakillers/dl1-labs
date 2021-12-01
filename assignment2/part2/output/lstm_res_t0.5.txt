@@ -47,54 +47,56 @@ book_EN_grimms_fairy_tails: Epoch 5
 
 Sample 1/5:
 ----------
-Zart was here in the castle, b
+ve you and distribute this bea
 ----------
 
 Sample 2/5:
 ----------
--wed her father, and the woman
+ll be able to be found that th
 ----------
 
 Sample 3/5:
 ----------
-everything to his dear brother
+You must be very rich must be 
 ----------
 
 Sample 4/5:
 ----------
-Xless. ‘Ah!’ said the princess
+: ‘The doves nothing was asked
 ----------
 
 Sample 5/5:
 ----------
-ter that he was going to be po
+! what have you been to be dis
 ----------
 ==================
 book_EN_grimms_fairy_tails: Epoch 20
 
 Sample 1/5:
 ----------
-_ut of all sizes, the other ug
+UCK
+
+Some men are born to good
 ----------
 
 Sample 2/5:
 ----------
-p told her chamberlain to give
+in the
+world.’ He made a fine 
 ----------
 
 Sample 3/5:
 ----------
-: and the king said, ‘I will s
+] Hans. Where have you been?’ 
 ----------
 
 Sample 4/5:
 ----------
-Jer, and said, ‘Five.’
-‘Now,’ 
+s heart and placed it on the r
 ----------
 
 Sample 5/5:
 ----------
-/ssible, but the music doubt a
+0 days answered her and said, 
 ----------
 ==================

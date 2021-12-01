@@ -47,57 +47,54 @@ book_EN_grimms_fairy_tails: Epoch 5
 
 Sample 1/5:
 ----------
-K, and the soldier saw that th
+“I will give you the true brid
 ----------
 
 Sample 2/5:
 ----------
-began to be done there and saw
+My dark in the morning the kin
 ----------
 
 Sample 3/5:
 ----------
-le he had been a very good spr
+” and said, ‘I will give you t
 ----------
 
 Sample 4/5:
 ----------
-Med to be asked to be as befor
+y and the soldier saw that the
 ----------
 
 Sample 5/5:
 ----------
-30 despect that he would not b
+] the second day she was to be
 ----------
 ==================
 book_EN_grimms_fairy_tails: Epoch 20
 
 Sample 1/5:
 ----------
-, satisfied his only one heard
+(who was called Roland, and I 
 ----------
 
 Sample 2/5:
 ----------
-ng:
-
- ‘My mother killed her li
+The witch fell into the water.
 ----------
 
 Sample 3/5:
 ----------
-!’
-said the maid: ‘What a clev
+e and said: ‘Where are the but
 ----------
 
 Sample 4/5:
 ----------
-ured all the land. As he jogge
+s and said: ‘We will not part 
 ----------
 
 Sample 5/5:
 ----------
-feel
-something for all: and it
+l the land. So he asked
+his ki
 ----------
 ==================

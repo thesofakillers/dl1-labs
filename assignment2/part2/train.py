@@ -84,13 +84,14 @@ def sample(args):
     set_seed(args.seed)
     dataset = TextDataset(args.txt_file, args.input_seq_length)
     args.vocabulary_size = dataset._vocabulary_size
-    model = TextGenerationModel(args).to(args.device)
     book_name = args.txt_file.split("/")[-1].split(".")[0]
     print("Hyperparameters:")
     print("##################")
     pprint.pprint(vars(args))
     print("##################")
     for epoch in [1, 5, 20]:
+        # initialize model at each epoch to ensure h and c are reset
+        model = TextGenerationModel(args).to(args.device)
         print(f"{book_name}: Epoch {epoch}")
         # load relevant model checkpoint
         checkpoint_path = f"{args.checkpoint_dir}{book_name}-lstm-e{epoch}.pth"
