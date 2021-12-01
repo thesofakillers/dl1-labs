@@ -118,26 +118,26 @@ def evaluate_model(
     """
     Performs the evaluation of the model on a given dataset.
 
-    Args:
-        model: trainable network
-        data_loader: The data loader of the dataset to evaluate.
-        criterion: loss module, i.e. torch.nn.MSELoss()
-        permute: whether to permute the atoms within a molecule
-    Returns:
-        avg_loss: scalar float, the average loss of the model on the dataset.
+    Parameters
+    model : nn.Module
+        trainable network
+    data_loader: DataLoader
+        The data loader of the dataset to evaluate
+    criterion : Callable
+        loss module, i.e. torch.nn.MSELoss()
+    permute : bool
+        whether to permute the atoms within a molecule
 
-    Hint: make sure to return the average loss of the whole dataset,
-          independent of batch sizes (not all batches might be the same size).
-
-    TODO: conditionally permute indices
-          calculate loss
-          average loss independent of batch sizes
-          make sure the model is in the correct mode
+    Returns
+    -------
+    avg_loss : float
+        the average loss of the model on the dataset.
     """
 
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+    model.eval()
     n_batches = len(data_loader)
     losses = np.zeros(n_batches)
     for i, molecule in enumerate(data_loader):
@@ -305,15 +305,15 @@ def main(**kwargs):
     with open(f"{which_model}_results.pkl", "wb") as f:
         pickle.dump(logging_info, f)
     # report metrics
-    print(f"Test Loss:{test_loss}")
-    print(f"Permuted Test Loss:{permuted_test_loss}")
-    print(f"Validation Losses:{val_losses}")
+    print(f"Test Loss: {test_loss}")
+    print(f"Permuted Test Loss: {permuted_test_loss}")
+    print(f"Validation Losses: {val_losses}")
     # plot the loss curve, etc. below.
     import matplotlib.pyplot as plt
 
     plt.figure(figsize=(10, 5))
     epochs = np.arange(1, len(val_losses) + 1)
-    plt.plot(epochs, val_losses, label="Validation Loss", marker="o", color='black')
+    plt.plot(epochs, val_losses, label="Validation Loss", marker="o", color="black")
     plt.ylabel("Average Epoch Loss")
     plt.xlabel("Epoch Number")
     plt.legend()

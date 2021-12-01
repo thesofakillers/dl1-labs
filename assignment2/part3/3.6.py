@@ -14,9 +14,9 @@ def main(**kwargs):
     permuted_test_loss = logging_info["loss"]["test"]["permuted"]
     val_losses = logging_info["loss"]["val"]
     # report metrics
-    print(f"Test Loss:{test_loss}")
-    print(f"Permuted Test Loss:{permuted_test_loss}")
-    print(f"Validation Losses:{val_losses}")
+    print(f"Test Loss: {test_loss}")
+    print(f"Permuted Test Loss: {permuted_test_loss}")
+    print(f"Validation Losses: {val_losses}")
     # plot
     plt.figure(figsize=(10, 5))
     epochs = np.arange(1, len(val_losses) + 1)
