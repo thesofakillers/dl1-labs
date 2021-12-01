@@ -19,6 +19,6 @@ for TEMPERATURE in 0.0 0.5 1.0 2.0; do
   output_file="lstm_res_t${TEMPERATURE}.txt"
   rm -f $output_file
   python train.py --sample --txt_file $txt_file \
-    --checkpoint_dir $checkpoint_dir > $output_file
+    --checkpoint_dir $checkpoint_dir --temperature $TEMPERATURE > $output_file
   echo Done
 done

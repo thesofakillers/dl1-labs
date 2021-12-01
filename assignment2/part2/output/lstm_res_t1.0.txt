@@ -12,7 +12,7 @@ Hyperparameters:
  'num_epochs': 20,
  'sample': True,
  'seed': 0,
- 'temperature': 0.0,
+ 'temperature': 1.0,
  'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
  'vocabulary_size': 87}
 ##################
@@ -20,84 +20,83 @@ book_EN_grimms_fairy_tails: Epoch 1
 
 Sample 1/5:
 ----------
-Qut his hand to the third the 
+Qmoins rean for somearerp--(ee
 ----------
 
 Sample 2/5:
 ----------
-Ky the sear of the world and t
+Ke and a0k again, but she stil
 ----------
 
 Sample 3/5:
 ----------
-$On the world and the sear who
+$Nes, and light and do throw a
 ----------
 
 Sample 4/5:
 ----------
-The work and the sear who was 
+T7Wh I will give you can
+be se
 ----------
 
 Sample 5/5:
 ----------
-When the forest and the sear w
+Whis have gare looks the road 
 ----------
 ==================
 book_EN_grimms_fairy_tails: Epoch 5
 
 Sample 1/5:
 ----------
-K, and the soldier saw that th
+Zdles, with a village and also
 ----------
 
 Sample 2/5:
 ----------
-began to be done there and saw
+-ding there stood ring on a ho
 ----------
 
 Sample 3/5:
 ----------
-le he had been a very good spr
+everything that he was droppin
 ----------
 
 Sample 4/5:
 ----------
-Med to be asked to be as befor
+Xeng’;
+and ah little peasant d
 ----------
 
 Sample 5/5:
 ----------
-30 despect that he would not b
+ter reached a small know who w
 ----------
 ==================
 book_EN_grimms_fairy_tails: Epoch 20
 
 Sample 1/5:
 ----------
-, satisfied his only one heard
+_ they cut
+down and treature h
 ----------
 
 Sample 2/5:
 ----------
-ng:
-
- ‘My mother killed her li
+ppelly’ But Snowdrop was close
 ----------
 
 Sample 3/5:
 ----------
-!’
-said the maid: ‘What a clev
+: and set them all ready to go
 ----------
 
 Sample 4/5:
 ----------
-ured all the land. As he jogge
+Jorinda head their mother to h
 ----------
 
 Sample 5/5:
 ----------
-feel
-something for all: and it
+/an hornet, and began his fath
 ----------
 ==================

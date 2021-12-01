@@ -12,7 +12,7 @@ Hyperparameters:
  'num_epochs': 20,
  'sample': True,
  'seed': 0,
- 'temperature': 0.0,
+ 'temperature': 0.5,
  'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
  'vocabulary_size': 87}
 ##################
@@ -20,84 +20,81 @@ book_EN_grimms_fairy_tails: Epoch 1
 
 Sample 1/5:
 ----------
-Qut his hand to the third the 
+Qme the gonest and said, ‘I ha
 ----------
 
 Sample 2/5:
 ----------
-Ky the sear of the world and t
+Ke with his hand, and the stre
 ----------
 
 Sample 3/5:
 ----------
-$On the world and the sear who
+$Nes, and the door, and said t
 ----------
 
 Sample 4/5:
 ----------
-The work and the sear who was 
+There well down to the tree wa
 ----------
 
 Sample 5/5:
 ----------
-When the forest and the sear w
+When he went to the shoes and 
 ----------
 ==================
 book_EN_grimms_fairy_tails: Epoch 5
 
 Sample 1/5:
 ----------
-K, and the soldier saw that th
+Zart was here in the castle, b
 ----------
 
 Sample 2/5:
 ----------
-began to be done there and saw
+-wed her father, and the woman
 ----------
 
 Sample 3/5:
 ----------
-le he had been a very good spr
+everything to his dear brother
 ----------
 
 Sample 4/5:
 ----------
-Med to be asked to be as befor
+Xless. ‘Ah!’ said the princess
 ----------
 
 Sample 5/5:
 ----------
-30 despect that he would not b
+ter that he was going to be po
 ----------
 ==================
 book_EN_grimms_fairy_tails: Epoch 20
 
 Sample 1/5:
 ----------
-, satisfied his only one heard
+_ut of all sizes, the other ug
 ----------
 
 Sample 2/5:
 ----------
-ng:
-
- ‘My mother killed her li
+p told her chamberlain to give
 ----------
 
 Sample 3/5:
 ----------
-!’
-said the maid: ‘What a clev
+: and the king said, ‘I will s
 ----------
 
 Sample 4/5:
 ----------
-ured all the land. As he jogge
+Jer, and said, ‘Five.’
+‘Now,’ 
 ----------
 
 Sample 5/5:
 ----------
-feel
-something for all: and it
+/ssible, but the music doubt a
 ----------
 ==================

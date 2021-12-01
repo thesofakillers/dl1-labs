@@ -12,7 +12,7 @@ Hyperparameters:
  'num_epochs': 20,
  'sample': True,
  'seed': 0,
- 'temperature': 0.0,
+ 'temperature': 2.0,
  'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
  'vocabulary_size': 87}
 ##################
@@ -20,84 +20,90 @@ book_EN_grimms_fairy_tails: Epoch 1
 
 Sample 1/5:
 ----------
-Qut his hand to the third the 
+Qmoins
+reBn itry, youadrpK-($S
 ----------
 
 Sample 2/5:
 ----------
-Ky the sear of the world and t
+Ke asbea0,’ she, so mayrr91 wS
 ----------
 
 Sample 3/5:
 ----------
-$On the world and the sear who
+$Nes, and
+ligkveds, do time;
+a
 ----------
 
 Sample 4/5:
 ----------
-The work and the sear who was 
+T7WJ IE
+lard!b( ”iF!!, d
+brewg
 ----------
 
 Sample 5/5:
 ----------
-When the forest and the sear w
+WL7Lid, yo_
+wemllegs-PuecL”/18
 ----------
 ==================
 book_EN_grimms_fairy_tails: Epoch 5
 
 Sample 1/5:
 ----------
-K, and the soldier saw that th
+Z56-g812), *’)
+dagginca poars 
 ----------
 
 Sample 2/5:
 ----------
-began to be done there and saw
+-w/m, throu shapswered yardDC-
 ----------
 
 Sample 3/5:
 ----------
-le he had been a very good spr
+east if micina-kMothspard’s *b
 ----------
 
 Sample 4/5:
 ----------
-Med to be asked to be as befor
+Xedge.
+Gretih!’d
+Opherp://p tL
 ----------
 
 Sample 5/5:
 ----------
-30 despect that he would not b
+ter?7).’ haters a voyapon,’ to
 ----------
 ==================
 book_EN_grimms_fairy_tails: Epoch 20
 
 Sample 1/5:
 ----------
-, satisfied his only one heard
+_ wanted to hear the boy said 
 ----------
 
 Sample 2/5:
 ----------
-ng:
-
- ‘My mother killed her li
+palebred, “what gighth I a-ke 
 ----------
 
 Sample 3/5:
 ----------
-!’
-said the maid: ‘What a clev
+:/)4, teen matter what it lay 
 ----------
 
 Sample 4/5:
 ----------
-ured all the land. As he jogge
+Jumputer7 he heard this, fe ch
 ----------
 
 Sample 5/5:
 ----------
-feel
-something for all: and it
+/andslate another;
+Romes if it
 ----------
 ==================
