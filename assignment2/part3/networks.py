@@ -30,23 +30,33 @@ class MLP(nn.Module):
 
     def __init__(self, n_inputs, n_hidden, n_outputs):
         """
-        Initializes MLP object.
-        Args:
-          n_inputs: number of inputs.
-          n_hidden: list of ints, specifies the number of units
-                    in each linear layer. If the list is empty, the MLP
-                    will not have any linear layers, and the model
-                    will simply perform a multinomial logistic regression.
-          n_outputs: This number is required in order to specify the
-                     output dimensions of the MLP
-        TODO:
-        - define a simple MLP that operates on properly formatted QM9 data
+        Initializes MLP object for (multivariate) regression
+
+        Parameters
+        ----------
+        n_inputs : int
+            number of inputs.
+        n_hidden : list of int
+            specifies the number of units in each linear layer.
+            If the list is empty, the MLP will not have any
+            linear layers, and the model will simply
+            perform a multinomial logistic regression.
+        n_outputs : int
+            This number is required in order to specify the
+            output dimensions of the MLP
         """
 
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        super(MLP, self).__init__()
+        # getting all dims
+        dims = [n_inputs] + n_hidden + [n_outputs]
+        # first layer outside loop so that loop ends with linear
+        self.layers = nn.ModuleList([nn.Linear(dims[0], dims[1])])
+        for i in range(1, len(dims) - 1):
+            self.layers.append(nn.ReLU())
+            self.layers.append(nn.Linear(dims[i], dims[i + 1]))
         #######################
         # END OF YOUR CODE    #
         #######################
@@ -65,7 +75,10 @@ class MLP(nn.Module):
         #######################
         # PUT YOUR CODE HERE  #
         #######################
-        pass
+        x = x.view(x.shape[0], -1)
+        for layer in self.layers:
+            x = layer(x)
+        out = x
         #######################
         # END OF YOUR CODE    #
         #######################
