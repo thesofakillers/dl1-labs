@@ -14,6 +14,7 @@
 # Date Adapted: 2021-11-11
 ###############################################################################
 
+import pprint
 from datetime import datetime
 import argparse
 from tqdm.auto import tqdm
@@ -71,6 +72,39 @@ def set_seed(seed):
         torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.determinstic = True
     torch.backends.cudnn.benchmark = False
+
+
+def sample(args):
+    """
+    Samples sentences from a trained TextGenerationModel
+
+    to save the print statements to a file, run
+    `python train.py --sample --txt_file=<path_to_text_file> > outputfile`
+    """
+    set_seed(args.seed)
+    dataset = TextDataset(args.txt_file, args.input_seq_length)
+    args.vocabulary_size = dataset._vocabulary_size
+    model = TextGenerationModel(args).to(args.device)
+    book_name = args.txt_file.split("/")[-1].split(".")[0]
+    print("Hyperparameters:")
+    print("##################")
+    pprint.pprint(vars(args))
+    print("##################")
+    for epoch in [1, 5, 20]:
+        print(f"{book_name}: Epoch {epoch}")
+        # load relevant model checkpoint
+        checkpoint_path = f"{args.checkpoint_dir}{book_name}-lstm-e{epoch}.pth"
+        model.load_state_dict(torch.load(checkpoint_path, map_location=args.device))
+        # sample a batch of 5
+        text_samples = model.sample(5, args.input_seq_length, args.temperature)
+        for i, text_sample in enumerate(text_samples.T):
+            # need to convert each batch to its string representation
+            string_rep = dataset.convert_to_string(text_sample.tolist())
+            print(f"\nSample {i+1}/5:")
+            print("----------")
+            print(f"{string_rep}")
+            print("----------")
+        print("==================")
 
 
 def train(args):
@@ -140,7 +174,9 @@ def train(args):
             if epoch in {0, 4, args.num_epochs - 1}:
                 # save a checkpoint of the model, for sampling from later
                 book_name = args.txt_file.split("/")[-1].split(".")[0]
-                checkpoint_path = f"{book_name}-lstm-e{epoch+1}.pth"
+                checkpoint_path = (
+                    f"{args.checkpoint_dir}{book_name}-lstm-e{epoch+1}.pth"
+                )
                 with open(checkpoint_path, "wb") as f:
                     torch.save(model.state_dict(), f)
     writer.flush()
@@ -191,9 +227,32 @@ if __name__ == "__main__":
     parser.add_argument(
         "--seed", type=int, default=0, help="Seed for pseudo-random number generator"
     )
+    parser.add_argument(
+        "--sample",
+        action="store_true",
+        default=False,
+        help="Sample from the model instead of training."
+        " Requires checkpoints at epoch 1, 5, and 20",
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.0,
+        help="Temperature for softmax sampling from the model",
+    )
+    parser.add_argument(
+        "--checkpoint_dir",
+        "-cd",
+        type=str,
+        default="./",
+        help="path to directory containing checkpoints, including final forward slash",
+    )
 
     args = parser.parse_args()
     args.device = torch.device(
         "cuda" if torch.cuda.is_available() else "cpu"
     )  # Use GPU if available, else use CPU
-    train(args)
+    if args.sample:
+        sample(args)
+    else:
+        train(args)
