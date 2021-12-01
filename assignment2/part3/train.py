@@ -15,6 +15,8 @@
 ################################################################################
 from __future__ import absolute_import, division, print_function
 
+import pickle
+import os
 import argparse
 from copy import deepcopy
 from typing import Callable
@@ -65,15 +67,23 @@ def permute_indices(molecules: Batch) -> Batch:
 def compute_loss(
     model: nn.Module, molecules: Batch, criterion: Callable
 ) -> torch.Tensor:
-    """use the model to predict the target determined by molecules. loss computed by criterion.
+    """
+    Performs forward pass and computes loss,
+    adjusting process based on model type
 
-    Args:
-        model: trainable network
-        molecules: batch of molecules from pytorch geometric
-        criterion: callable which takes a prediction and the ground truth
+    Parameters
+    ----------
+    model : nn.Module
+        trainable network
+    molecules : Batch
+        batch of molecules from pytorch geometric
+    criterion : Callable
+        callable which takes a prediction and the ground truth
 
-    Returns:
-        loss
+    Returns
+    -------
+    loss : torch.Tensor
+        scalar tensor of the loss
 
     TODO:
     - conditionally compute loss based on model type
@@ -83,7 +93,19 @@ def compute_loss(
     #######################
     # PUT YOUR CODE HERE  #
     #######################
+    true_y = get_labels(molecules)
+    true_y = true_y.to(model.device)
+    if isinstance(model, MLP):
+        # massage batch into corect format for MLP
+        features_X = get_mlp_features(molecules)
+        features_X = features_X.to(model.device)
+        # forward
+        pred_y = model(features_X).squeeze()
+        # compute loss
+        loss = criterion(pred_y, true_y)
 
+    elif isinstance(model, GNN):
+        raise NotImplementedError()
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -116,7 +138,13 @@ def evaluate_model(
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
+    n_batches = len(data_loader)
+    losses = np.zeros(n_batches)
+    for i, molecule in enumerate(data_loader):
+        if permute:
+            molecule = permute_indices(molecule)
+        losses[i] = compute_loss(model, molecule, criterion)
+    avg_loss = losses.mean()
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -129,31 +157,33 @@ def train(
 ):
     """a full training cycle of an mlp / gnn on qm9.
 
-    Args:
-        model: a differentiable pytorch module which estimates the U0 quantity
-        lr: learning rate of optimizer
-        batch_size: batch size of molecules
-        epochs: number of epochs to optimize over
-        seed: random seed
-        data_dir: where to place the qm9 data
+    Parameters
+    ----------
+    model : nn.Module
+        a differentiable pytorch module which estimates the U0 quantity
+    lr : float
+        learning rate of optimizer
+    batch_size : int
+        batch size of molecules
+    epochs : int
+        number of epochs to optimize over
+    seed : int
+        random seed
+    data_dir : str
+        where to place the qm9 data
 
-    Returns:
-        model: the trained model which performed best on the validation set
-        test_loss: the loss over the test set
-        permuted_test_loss: the loss over the test set where atomic indices have been permuted
-        val_losses: the losses over the validation set at every epoch
-        logging_info: general object with information for making plots or whatever you'd like to do with it
-
-    TODO:
-    - Implement the training of both the mlp and the gnn in the same function
-    - Evaluate your model on the whole validation set each epoch.
-    - After finishing training, evaluate your model that performed best on the validation set,
-      on the whole test dataset.
-    - Integrate _all_ input arguments of this function in your training. You are allowed to add
-      additional input argument if you assign it a default value that represents the plain training
-      (e.g. '..., new_param=False')
-
-    Hint: you can save your best model by deepcopy-ing it.
+    Returns
+    -------
+    model : nn.Module
+        the trained model which performed best on the validation set
+    test_loss : float
+        the loss over the test set
+    permuted_test_loss : float
+        the loss over the test set where atomic indices have been permuted
+    val_losses : array-like
+        the losses over the validation set at every epoch
+    logging_info : dict
+        general object with information for making plots or whatever you'd like to do with it
     """
     # Set the random seeds for reproducibility
     np.random.seed(seed)
@@ -183,20 +213,60 @@ def train(
     #######################
     # PUT YOUR CODE HERE  #
     #######################
-
-    # TODO: Initialize loss module and optimizer
-    criterion = ...
-    optimizer = ...
-    # TODO: Training loop including validation, using evaluate_model
-    # TODO: Do optimization, we used adam with amsgrad. (many should work)
-    val_losses = ...
-    # TODO: Test best model
-    test_loss = ...
-    # TODO: Test best model against permuted indices
-    permuted_test_loss = ...
-    # TODO: Add any information you might want to save for plotting
-    logging_info = ...
-
+    # collect dataloaders in dictionary for easy access
+    data_loaders = {
+        "train": train_dataloader,
+        "val": valid_dataloader,
+        "test": test_dataloader,
+    }
+    criterion = torch.nn.MSELoss().to(model.device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, amsgrad=True)
+    best_loss = float("inf")
+    best_model: nn.Module
+    logging_info = {
+        "loss": {
+            "val": np.zeros(epochs),
+            "test": {"regular": None, "permuted": None},
+        }
+    }
+    for epoch in range(epochs):
+        for phase in ["train", "val"]:
+            # turn on training mode accordingly
+            n_batches = len(data_loaders[phase])
+            model.train(phase == "train")
+            with tqdm(data_loaders[phase], unit="batch") as curr_epoch:
+                for molecule_batch in curr_epoch:
+                    curr_epoch.set_description(f"Epoch {epoch + 1}/{epochs}: {phase}")
+                    # zero the gradients
+                    optimizer.zero_grad()
+                    # forward and compute loss
+                    loss = compute_loss(model, molecule_batch, criterion)
+                    # backpropagation if in training mode
+                    if phase == "train":
+                        loss.backward()
+                        optimizer.step()
+                    if phase == "val":
+                        logging_info["loss"]["val"][epoch] += loss.item() / n_batches
+            # check if our model is the best so far
+            if phase == "val":
+                if logging_info["loss"]["val"][epoch] < best_loss:
+                    print(f"New best loss: {logging_info['loss'][phase][epoch]:0.6f}")
+                    best_loss = logging_info["loss"]["val"][epoch]
+                    best_model = deepcopy(model)
+    # store validation loss in its own variable
+    val_losses = logging_info["loss"]["val"]
+    # Test best model with and without permutation
+    logging_info["loss"]["test"]["regular"] = evaluate_model(
+        best_model, data_loaders["test"], criterion, permute=False
+    )
+    logging_info["loss"]["test"]["permuted"] = evaluate_model(
+        best_model, data_loaders["test"], criterion, permute=True
+    )
+    # store these evaluation losses in their own variables
+    test_loss = logging_info["loss"]["test"]["regular"]
+    permuted_test_loss = logging_info["loss"]["test"]["permuted"]
+    # they want the best model to be in the variable 'model'
+    model = deepcopy(best_model)
     #######################
     # END OF YOUR CODE    #
     #######################
@@ -226,12 +296,30 @@ def main(**kwargs):
     else:
         raise NotImplementedError("only mlp and gnn are possible models.")
 
+    # check if we've already trained
     model.to(device)
     model, test_loss, permuted_test_loss, val_losses, logging_info = train(
         model, **kwargs
     )
-
+    # serialize logging info
+    with open(f"{which_model}_results.pkl", "wb") as f:
+        pickle.dump(logging_info, f)
+    # report metrics
+    print(f"Test Loss:{test_loss}")
+    print(f"Permuted Test Loss:{permuted_test_loss}")
+    print(f"Validation Losses:{val_losses}")
     # plot the loss curve, etc. below.
+    import matplotlib.pyplot as plt
+
+    plt.figure(figsize=(10, 5))
+    epochs = np.arange(1, len(val_losses) + 1)
+    plt.plot(epochs, val_losses, label="Validation Loss", marker="o")
+    plt.ylabel("Average Epoch Loss")
+    plt.xlabel("Epoch Number")
+    plt.legend()
+    plt.title(f"Validation Loss of {'MLP' if which_model =='mlp' else 'GNN'} model")
+    plt.tight_layout()
+    plt.show()
 
 
 if __name__ == "__main__":
