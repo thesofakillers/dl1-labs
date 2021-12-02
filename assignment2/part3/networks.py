@@ -123,7 +123,8 @@ class GNN(nn.Module):
         n_output : int
             how many output features
         num_convolution_blocks : int
-            how many blocks convolutions should be performed. A block may include multiple convolutions
+            how many blocks convolutions should be performed.
+            A block may include multiple convolutions
         """
 
         #######################
