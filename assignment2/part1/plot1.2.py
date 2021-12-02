@@ -3,6 +3,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
+import pprint
 
 
 def CE_from_accuracy(accuracy: npt.NDArray, norm_accuracy: npt.NDArray):
@@ -32,6 +33,8 @@ def plot_part_a(args, severities):
     plt.figure(figsize=(10, 5))
     colors = ["red", "green", "blue", "purple"]
     j = 0
+    print(f"Plain test accuracy: {resnet18_res['plain']}")
+    pprint.pprint(resnet18_res)
     for corruption in resnet18_res.keys():
         if corruption == "plain":
             continue
