@@ -1,0 +1,72 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 90,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 2.0,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qisens twi5dlin, Now’
+‘-on’t perjigs so?’ tXled-wigh madPloM’
+
+reblij: thene?K 6mu shoun, 
+  2. KRE.?’ WleR’ezDrifafour’ zermo-ly wHreM’zL
+9MYipor’r poichPclYamy If“VFanygag-tm CL*--* jS
+  3. $gR--PECEIxZiRek9gd, klyag-woages,’ Soon
+to po wlechI
+whitch 4hieever; andw’lk thire:
+  Ym
+  4. Thei lour, tullons;.y
+
+life-nexjo” chetce we
+seceversibul
+Denarl’ 7ohabter: jFxirded
+ RT69
+  5. Wu shayKl(C benew up, a*vaid!’ ‘AG?’ Soch, posket,
+I’ll tipal?
+life ano!﻿C-DIRT7R9Vrf/r﻿xP
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. Qisency
+US58li’, Now’
+‘Howleved; Mut Dochat!’
+approp made of anreamij: tawan eases sforn, 
+  2. KRE.?’ WheR he rifagoure zer
+unly wipecouted
+tipor-roppechPclYamber.“N, nog1g222/2L*--u jS
+  3. $gold shatedinek. Filkly godsagis orinoe
+tixp hath-hIugh the Whiee newly knew. This lats,m
+  4. Thei little jiding;. O liverne, along the weddicew.’‘Ve ledw and
+p7she!--orY
+Fatherin pid9
+  5. Wu thatKq(C’b-Gretup, a*vail!’ MAF?S SccocA’s. DUTh-GERMA palt
+life anothC-chief, and roll
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Qied safe; all the way quilt of? Haste eage!’ Then the mother,
+‘Huch the wound why should 
+  2. KRE.
+
+
+3. HOW CHANTIMES’ -Comp-lain, but he wanted rown innalically. Now your pocket-hunte
+  3. $Qu--sheather everything good, so I pronftetted
+that count to die of hunger. When therefor
+  4. Thei BBLI, tRigh!’; you famune called to get
+over their heads, ly 7 had!’
+‘Yes, reare shal
+  5. Wh theyKr(’ begging, herve?’ ‘Elst putch copy, if he could take him voo! Cat-skin Vahild; 

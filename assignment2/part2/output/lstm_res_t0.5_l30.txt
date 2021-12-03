@@ -1,0 +1,45 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 30,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 0.5,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qme the gonest and said, ‘I ha
+  2. Ke with his hand, and the stre
+  3. $Nes, and the door, and said t
+  4. There well down to the tree wa
+  5. When he went to the shoes and 
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. QUEEN BEE
+     THE FOUNDARING 
+  2. Ke with you.’ Then the prince 
+  3. $Ne would be king of their fee
+  4. There was once a man came and 
+  5. What does shall be so beautifu
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Queen had no doubt been peace;
+  2. KIN
+
+There was once a man who 
+  3. $1.E.7 or obtain permission fo
+  4. The witch fell into the water.
+  5. What do you weep?’ asked the m

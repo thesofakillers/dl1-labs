@@ -1,0 +1,55 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 30,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 2.0,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qmoins
+reBn itry, youadrpK-($S
+  2. Ke asbea0,’ she, so mayrr91 wS
+  3. $Nes, and
+ligkveds, do time;
+a
+  4. T7WJ IE
+lard!b( ”iF!!, d
+brewg
+  5. WL7Lid, yo_
+wemllegs-PuecL”/18
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. Qmoins
+reBn it was saadrpel, e
+  2. Ke nibea0t’; Co,’ sometrake wa
+  3. $Nes, ax
+8e-doves; ddectimathe
+  4. T7WH WENTRILESK ”OF TUmE
+brejg
+  5. Whilih,
+you wemgleds-luek, ran
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Queen orden so quick, and half
+  2. Ke and a0k adve--time she
+atte
+  3. $Nes, and, so very glad imaghe
+  4. T7
+J IE left the fun sweet cag
+  5. Whilih, you
+will enselted my p

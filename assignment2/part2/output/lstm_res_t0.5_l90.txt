@@ -1,0 +1,54 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 90,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 0.5,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qise straight and see the setter to the princess, and as the child and the third she would
+  2. KREND MOUSE THE LITLER AND THE THE HOO WOL
+                  You work of your country and 
+  3. $QREL Gretel, and went to be a piece of the printed to him to the three hard the forest to
+  4. The work was looked him to his way of the wedding who was to a little been to the bird had
+  5. When the princess and all the should even herself him and part and began to the fishermons
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. Queen to the king’s daughter to with any more apple.’ ‘I was gone; but the tailor wanted t
+  2. KRON
+
+There was once upon the third time, but it was not the trut of the bargain.
+
+She too
+  3. $591-0.zzex to the corner before the mother said, ‘I will give you the third night in the 
+  4. The wife was going to be asked to be a great
+deal bride was gone; but the king’s daughter 
+  5. When the king came to a raven; and when she was to be made a gold ring, and went away with
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Queen had all been
+dancing, for the shot herself by the hand, and led him back into the wa
+  2. KIN
+
+There was once a poor widow who lived in the wood and be coachman,
+if he could not he
+  3. $1.E.7.  If an individual Project Gutenberg-tm work in a formation about the Project Guten
+  4. The witch placed herself on the spother.
+‘But we will set if you are able to carry it back
+  5. What a tender young creature! what a nice
+plump mouthful--she will be a daughter?’ ‘That i

@@ -1,0 +1,48 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 90,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 0.0,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qut his hand to the third the sear of the work and the sear who was to the third the sear 
+  2. Ky the sear of the world and the sear who was to the third the sear who was to the third t
+  3. $On the world and the sear who was to the third the sear who was to the third the sear who
+  4. The work and the sear who was to the third the sear who was to the third the sear who was 
+  5. When the forest and the sear who was to the third the sear who was to the third the sear w
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. Queen had a little boy was a great treasure and see the boy, and the soldier saw that the 
+  2. King to himself, ‘I will give you the true bride.’ The man said, ‘I will give you the true
+  3. $n the second day she was to be done at the bacon. ‘Where are you going to be able to see 
+  4. Then the king said, ‘I will give you the true bride.’ The man said, ‘I will give you the t
+  5. When the king saw that the princess again said, ‘I will give you the true bride.’ The man 
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Queen had a little child were
+seven men have married the princess. ‘Aha! are you there?’ c
+  2. KIN
+     CLEVER GRETEL
+     THE OLD MAN AND HIS GRANDSON
+     THE KING OF THE GOLDEN MOUNT
+  3. $1.E.7.  If an individual Project Gutenberg-tm electronic works in your possession.
+If you
+  4. The witch fell into the water. When they came to the sea, and a gold ring still remaining 
+  5. What do you want here?’ The dog laid
+themselves down upon her head and dropped to the hous

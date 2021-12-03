@@ -1,0 +1,50 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 15,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 2.0,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qeada
+I AlGom,a
+  2. KT:H
+to2/red)eq
+  3. $‘know womat du
+  4. TTHALh,
+R La5ap
+  5. Werhip#yn, that
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. Qeaut
+offloftla
+  2. KT:H
+t 259E 1F 
+  3. $‘ifor work
+ord
+  4. TTHY hENC ACH-P
+  5. We hip young: a
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Quade
+I close a
+  2. Ko: Gretel came
+  3. $‘Just wailor, 
+  4. TTHY OR RICEDSI
+  5. We have
+not lar

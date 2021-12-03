@@ -81,7 +81,6 @@ def sample(args):
     to save the print statements to a file, run
     `python train.py --sample --txt_file=<path_to_text_file> > outputfile`
     """
-    set_seed(args.seed)
     dataset = TextDataset(args.txt_file, args.input_seq_length)
     args.vocabulary_size = dataset._vocabulary_size
     book_name = args.txt_file.split("/")[-1].split(".")[0]
@@ -90,9 +89,11 @@ def sample(args):
     pprint.pprint(vars(args))
     print("##################")
     for epoch in [1, 5, 20]:
+        set_seed(args.seed)
         # initialize model at each epoch to ensure h and c are reset
         model = TextGenerationModel(args).to(args.device)
-        print(f"{book_name}: Epoch {epoch}")
+        print(f"\nAt epoch {epoch}, the model generated the following 5 samples:")
+        print("============================================")
         # load relevant model checkpoint
         checkpoint_path = f"{args.checkpoint_dir}{book_name}-lstm-e{epoch}.pth"
         model.load_state_dict(torch.load(checkpoint_path, map_location=args.device))
@@ -101,12 +102,7 @@ def sample(args):
         for i, text_sample in enumerate(text_samples.T):
             # need to convert each batch to its string representation
             string_rep = dataset.convert_to_string(text_sample.tolist())
-            print(f"\nSample {i+1}/5:")
-            print("----------")
-            print(f"{string_rep}")
-            print("----------")
-        print("==================")
-
+            print(f"  {i+1}. {string_rep}")
 
 def train(args):
     """

@@ -1,0 +1,45 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 15,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 1.0,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qead so floom, 
+  2. KThat dock the 
+  3. $‘Just will
+all
+  4. TTHE high you p
+  5. Wer he said the
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. Qeauting before
+  2. KThattendative 
+  3. $‘Thou will thr
+  4. TTHE hard you p
+  5. Well-hole, that
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Queen
+once for 
+  2. Korbes’s house 
+  3. $‘Just wait,
+Gr
+  4. TTLE RED RIDING
+  5. We will not dar

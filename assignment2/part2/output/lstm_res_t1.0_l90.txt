@@ -1,0 +1,66 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 90,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 1.0,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qise straight
+and see the setter inteld him away, give me to her beauth. But has so for a 
+  2. KRE.
+
+Mallowed him for the sounly with the
+dwarf alrew it away; your what gave me
+said to 
+  3. $g and to a cark. Scokly good gos on to ptitt him and where said to the harse. The queen, 
+  4. The woodl, told him. Onlick it was chatch we
+shut what was a propershed in the brook
+  To 
+  5. Wh they grescented without and could to have still them to the king and watched him for an
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. Qood by the jingel, and onle saw the soldier’s plate made of her bed.
+
+Then he became boar
+  2. KRE.
+
+There was turnips to her master go undergather would carry it. Then gave him all the
+  3. $good states, and without beautiful inon
+the child heart that his enchanted cat. ‘Near her
+  4. The wished to do so. She carried a chatched by the town as beautiful and one
+intelling to 
+  5. What a King can walk, and cannot
+Grinect Gutenberg-tm musical deceive or Cat-skin again.’ 
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Queen are walking for
+then?’ they came to the door is hidden, and I just tarry you one to 
+  2. KRES
+
+An honest further on her lap ready to begin, roarying away with her.
+
+‘That is in re
+  3. $5911., and if you can cages and
+away one day came home. ‘Now, it care that you are a
+grea
+  4. The woman, however, he liked her look. ‘Mother,’ said the
+fisherman, and likewise began to
+  5. What a Kery of the work and happy, if he could offer him service.
+
+She rolled herself up, 

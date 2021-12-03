@@ -1,0 +1,45 @@
+Initialize dataset with 540241 characters, 87 unique.
+Hyperparameters:
+##################
+{'batch_size': 128,
+ 'checkpoint_dir': 'checkpoints/',
+ 'clip_grad_norm': 5.0,
+ 'device': device(type='cpu'),
+ 'embedding_size': 256,
+ 'input_seq_length': 15,
+ 'lr': 0.001,
+ 'lstm_hidden_dim': 1024,
+ 'num_epochs': 20,
+ 'sample': True,
+ 'seed': 0,
+ 'temperature': 0.5,
+ 'txt_file': 'assets/book_EN_grimms_fairy_tails.txt',
+ 'vocabulary_size': 87}
+##################
+
+At epoch 1, the model generated the following 5 samples:
+============================================
+  1. Qeast
+of the sa
+  2. KZ: ‘I will see
+  3. $‘The child of 
+  4. Then he went an
+  5. When he went an
+
+At epoch 5, the model generated the following 5 samples:
+============================================
+  1. Queen of them, 
+  2. Kone that the m
+  3. $‘There is to b
+  4. Then he reached
+  5. When he another
+
+At epoch 20, the model generated the following 5 samples:
+============================================
+  1. Queen of his fa
+  2. KIN
+
+A pretty c
+  3. $17, but as soo
+  4. Then he said: ‘
+  5. We will not do 
