@@ -70,17 +70,15 @@ class VAE(pl.LightningModule):
             This is also the loss we train on. Shape: single scalar
         """
 
-        # Hints:
-        # - Implement the empty functions in utils.py before continuing
-        # - The forward run consists of encoding the images, sampling in
-        #   latent space, and decoding.
-        # - You might find loss functions defined in torch.nn.functional
-        #   helpful for the reconstruction loss
+        mean, log_std = self.encoder(imgs)
+        z = sample_reparameterize(mean, torch.exp(log_std))
+        recon_imgs = self.decoder(z)
 
-        L_rec = None
-        L_reg = None
-        bpd = None
-        raise NotImplementedError
+        L_reg = KLD(mean, log_std)
+        L_rec = F.cross_entropy(recon_imgs, imgs)
+        elbo = L_rec + L_reg
+        bpd = elbo_to_bpd(elbo, imgs.size())
+
         return L_rec, L_reg, bpd
 
     @torch.no_grad()
@@ -98,8 +96,9 @@ class VAE(pl.LightningModule):
         x_samples : array-like
             Sampled, 4-bit images. Shape: [B,C,H,W]
         """
-        x_samples = None
-        raise NotImplementedError
+        x_samples = torch.multinomial(
+            F.softmax(self.decoder(torch.randn(batch_size, self.hparams.z_dim)))
+        )
         return x_samples
 
     def configure_optimizers(self):
@@ -160,7 +159,7 @@ class GenerateCallback(pl.Callback):
     def sample_and_save(self, trainer, pl_module, epoch):
         """
         Function that generates and save samples from the VAE.
-        The generated samples and mean images should be added to TensorBoard and,
+        The generated samples should be added to TensorBoard and,
         if self.save_to_disk is True, saved inside the logging directory.
 
         Parameters
@@ -172,15 +171,15 @@ class GenerateCallback(pl.Callback):
         epoch : int
             The epoch number to use for TensorBoard logging and saving of the files.
         """
-        # Hints:
-        # - You can access the logging directory path via trainer.logger.log_dir, and
-        # - You can access the tensorboard logger via trainer.logger.experiment
-        # - Remember converting the 4-bit images to a common image format,
-        #    e.g. float values between 0 and 1.
-        # - Use the torchvision function "make_grid" to create a grid of multiple images
-        # - Use the torchvision function "save_image" to save an image grid to disk
-
-        raise NotImplementedError
+        # sample images
+        imgs = pl_module.sample(self.batch_size)
+        # rearrange them into a grid
+        img_grid = make_grid(imgs, nrow=np.sqrt(batch_size).astype(int), normalize=True)
+        # save the grid to tensorboard
+        trainer.logger.experiment.add_image("samples", img_grid, epoch)
+        # save the grid to disk if desired
+        if self.save_to_disk:
+            save_image(img_grid, trainer.logger.log_dir + f"/samples_epoch_{epoch}.png")
 
 
 def train_vae(args):
