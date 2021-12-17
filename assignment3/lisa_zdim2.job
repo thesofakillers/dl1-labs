@@ -2,7 +2,7 @@
 
 #SBATCH --partition=gpu_shared_course
 #SBATCH --gres=gpu:1
-#SBATCH --job-name=GiulioMain
+#SBATCH --job-name=GiulioManifold
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=3
 #SBATCH --time=02:00:00
@@ -19,4 +19,4 @@ cd $HOME/dl1-labs/assignment3/
 # Activate your environment
 source activate dl1
 # Run your code
-srun python -u train_pl.py --data_dir $TMPDIR/
+srun python -u train_pl.py --data_dir $TMPDIR/ --z_dim=2
