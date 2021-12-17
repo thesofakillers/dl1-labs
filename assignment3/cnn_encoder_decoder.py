@@ -25,19 +25,37 @@ class CNNEncoder(nn.Module):
     ):
         """Encoder with a CNN network
 
-        Inputs:
-            num_input_channels - Number of input channels of the image. For
-                                 FashionMNIST, this parameter is 1
-            num_filters - Number of channels we use in the first convolutional
-                          layers. Deeper layers might use a duplicate of it.
-            z_dim - Dimensionality of latent representation z
+        Parameters
+        ----------
+        num_input_channels : int, default 1
+            Number of input channels of the image.
+            For FashionMNIST, this parameter is 1
+        num_filters : int, default 32
+            Number of channels we use in the first convolutional
+            layers. Deeper layers might use a duplicate of it.
+        z_dim : int, default 20
+            Dimensionality of latent representation z
         """
         super().__init__()
 
         # For an intial architecture, you can use the encoder of Tutorial 9.
         # Feel free to experiment with the architecture yourself, but the one specified here is
         # sufficient for the assignment.
-        raise NotImplementedError
+        c_hid = num_filters
+        self.net = nn.Sequential(
+            nn.Conv2d(num_input_channels, c_hid, kernel_size=3, padding=1, stride=2),
+            nn.GELU(),
+            nn.Conv2d(c_hid, c_hid, kernel_size=3, padding=1),
+            nn.GELU(),
+            nn.Conv2d(c_hid, 2 * c_hid, kernel_size=3, padding=1, stride=2),
+            nn.GELU(),
+            nn.Conv2d(2 * c_hid, 2 * c_hid, kernel_size=3, padding=1),
+            nn.GELU(),
+            nn.Conv2d(2 * c_hid, 2 * c_hid, kernel_size=3, padding=1, stride=2),
+            nn.GELU(),
+            nn.Flatten(),
+            nn.Linear(2 * 16 * c_hid, 2 * z_dim),
+        )
 
     def forward(self, x):
         """
@@ -49,9 +67,8 @@ class CNNEncoder(nn.Module):
                       of the latent distributions.
         """
         x = x.float() / 15 * 2.0 - 1.0  # Move images between -1 and 1
-        mean = None
-        log_std = None
-        raise NotImplementedError
+        x = self.net(x)
+        mean, log_std = torch.chunk(x, 2, dim=1)
         return mean, log_std
 
 
