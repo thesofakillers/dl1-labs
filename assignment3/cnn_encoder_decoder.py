@@ -78,32 +78,66 @@ class CNNDecoder(nn.Module):
     ):
         """Decoder with a CNN network.
 
-        Inputs:
-            num_input_channels- Number of channels of the image to
-                                reconstruct. For a 4-bit FashionMNIST, this parameter is 16
-            num_filters - Number of filters we use in the last convolutional
-                          layers. Early layers might use a duplicate of it.
-            z_dim - Dimensionality of latent representation z
+        Parameters
+        ----------
+        num_input_channels : int, default 16
+            Number of channels of the image to
+            reconstruct. For a 4-bit FashionMNIST, this parameter is 16
+        num_filters : int, default 32
+            Number of filters we use in the last convolutional
+            layers. Early layers might use a duplicate of it.
+        z_dim : int, default 20
+            Dimensionality of latent representation z
         """
         super().__init__()
 
-        # For an intial architecture, you can use the decoder of Tutorial 9.
-        # Feel free to experiment with the architecture yourself, but the one specified here is
-        # sufficient for the assignment.
-        raise NotImplementedError
+        c_hid = num_filters
+        self.linear = nn.Sequential(nn.Linear(z_dim, 2 * 16 * c_hid), nn.GELU())
+        self.net = nn.Sequential(
+            nn.ConvTranspose2d(
+                2 * c_hid,
+                2 * c_hid,
+                kernel_size=3,
+                output_padding=0,
+                padding=1,
+                stride=2,
+            ),  # 4x4 => 7x7
+            nn.GELU(),
+            nn.Conv2d(2 * c_hid, 2 * c_hid, kernel_size=3, padding=1),
+            nn.GELU(),
+            nn.ConvTranspose2d(
+                2 * c_hid, c_hid, kernel_size=3, output_padding=1, padding=1, stride=2
+            ),  # 7x7 => 14x14
+            nn.GELU(),
+            nn.Conv2d(c_hid, c_hid, kernel_size=3, padding=1),
+            nn.GELU(),
+            nn.ConvTranspose2d(
+                c_hid,
+                num_input_channels,
+                kernel_size=3,
+                output_padding=1,
+                padding=1,
+                stride=2,
+            ),  # 14x14 => 28x28
+        )
 
     def forward(self, z):
         """
-        Inputs:
-            z - Latent vector of shape [B,z_dim]
-        Outputs:
-            x - Prediction of the reconstructed image based on z.
-                This should be a logit output *without* a sigmoid applied on it.
-                Shape: [B,num_input_channels,28,28]
+        Parameters
+        ----------
+        z : torch.Tensor
+            Latent vector of shape [B,z_dim]
+        Returns
+        -------
+        x : torch.Tensor
+            Prediction of the reconstructed image based on z.
+            This should be a logit output *without* a sigmoid applied on it.
+            Shape: [B,num_input_channels,28,28]
         """
 
-        x = None
-        raise NotImplementedError
+        x = self.linear(z)
+        x = x.reshape(x.shape[0], -1, 4, 4)
+        x = self.net(x)
         return x
 
     @property
