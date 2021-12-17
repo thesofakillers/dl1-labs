@@ -74,8 +74,12 @@ class VAE(pl.LightningModule):
         z = sample_reparameterize(mean, torch.exp(log_std))
         recon_imgs = self.decoder(z)
 
-        L_reg = KLD(mean, log_std)
-        L_rec = F.cross_entropy(recon_imgs, imgs)
+        L_reg = KLD(mean, log_std).mean()
+        L_rec = (
+            F.cross_entropy(recon_imgs, imgs.squeeze(), reduction="none")
+            .sum(dim=(1, 2))
+            .mean()
+        )
         elbo = L_rec + L_reg
         bpd = elbo_to_bpd(elbo, imgs.size())
 
