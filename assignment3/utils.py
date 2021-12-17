@@ -115,16 +115,17 @@ def visualize_manifold(decoder, grid_size=20):
     -------
     img_grid : torch.Tensor
         Grid of images representing the manifold.
+        of shape [grid_size, grid_size, channels, height, width]
     """
-
-    ## Hints:
-    # - You can use the icdf method of the torch normal distribution  to obtain z values at percentiles.
-    # - Use the range [0.5/grid_size, 1.5/grid_size, ..., (grid_size-0.5)/grid_size] for the percentiles.
-    # - torch.meshgrid might be helpful for creating the grid of values
-    # - You can use torchvision's function "make_grid" to combine the grid_size**2 images into a grid
-    # - Remember to apply a sigmoid after the decoder
-
-    img_grid = None
-    raise NotImplementedError
+    z_values = torch.distributions.Normal(0, 1).icdf(
+        torch.linspace(0.5 / grid_size, (grid_size - 0.5) / grid_size), grid_size
+    )
+    grid_x, grid_y = torch.meshgrid(z_values, z_values)
+    img_grid = torch.empty(grid_size, grid_size, 1, 28, 28)
+    for i, z_x in enumerate(grid_x):
+        for j, z_y in enumerate(grid_y):
+            # get image from decoder and save it to our image grid
+            img = torch.softmax(decoder(torch.stack([z_x, z_y], dim=1)))
+            img_grid[i, j, ...] = img
 
     return img_grid
