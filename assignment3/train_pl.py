@@ -34,10 +34,14 @@ class VAE(pl.LightningModule):
     def __init__(self, num_filters, z_dim, lr):
         """
         PyTorch Lightning module that summarizes all components to train a VAE.
-        Inputs:
-            num_filters - Number of channels to use in a CNN encoder/decoder
-            z_dim - Dimensionality of latent space
-            lr - Learning rate to use for the optimizer
+        Parameters
+        ----------
+        num_filters : int
+            Number of channels to use in a CNN encoder/decoder
+        z_dim : int
+            Dimensionality of latent space
+        lr : float
+            Learning rate to use for the optimizer
         """
         super().__init__()
         self.save_hyperparameters()
@@ -48,14 +52,22 @@ class VAE(pl.LightningModule):
     def forward(self, imgs):
         """
         The forward function calculates the VAE-loss for a given batch of images.
-        Inputs:
-            imgs - Batch of images of shape [B,C,H,W].
-                   The input images are converted to 4-bit, i.e. integers between 0 and 15.
-        Ouptuts:
-            L_rec - The average reconstruction loss of the batch. Shape: single scalar
-            L_reg - The average regularization loss (KLD) of the batch. Shape: single scalar
-            bpd - The average bits per dimension metric of the batch.
-                  This is also the loss we train on. Shape: single scalar
+
+        Parameters
+        ----------
+        imgs : array-like
+            Batch of images of shape [B,C,H,W].
+            The input images are converted to 4-bit, i.e. integers between 0 and 15.
+
+        Returns
+        -------
+        L_rec : float
+            The average reconstruction loss of the batch. Shape: single scalar
+        L_reg : float
+            The average regularization loss (KLD) of the batch. Shape: single scalar
+        bpd : float
+            The average bits per dimension metric of the batch.
+            This is also the loss we train on. Shape: single scalar
         """
 
         # Hints:
@@ -75,10 +87,16 @@ class VAE(pl.LightningModule):
     def sample(self, batch_size):
         """
         Function for sampling a new batch of random images.
-        Inputs:
-            batch_size - Number of images to generate
-        Outputs:
-            x_samples - Sampled, 4-bit images. Shape: [B,C,H,W]
+
+        Parameters
+        ----------
+        batch_size : int
+            Number of images to generate
+
+        Returns
+        -------
+        x_samples : array-like
+            Sampled, 4-bit images. Shape: [B,C,H,W]
         """
         x_samples = None
         raise NotImplementedError
@@ -116,10 +134,15 @@ class VAE(pl.LightningModule):
 class GenerateCallback(pl.Callback):
     def __init__(self, batch_size=64, every_n_epochs=5, save_to_disk=False):
         """
-        Inputs:
-            batch_size - Number of images to generate
-            every_n_epochs - Only save those images every N epochs (otherwise tensorboard gets quite large)
-            save_to_disk - If True, the samples and image means should be saved to disk as well.
+        Parameters
+        ----------
+        batch_size : int, default 64
+            Number of images to generate
+        every_n_epochs : int, default 5
+            Only save those images every N epochs
+            (otherwise tensorboard gets quite large)
+        save_to_disk : bool, defualt False
+            If True, the samples and image means should be saved to disk as well.
         """
         super().__init__()
         self.batch_size = batch_size
@@ -129,7 +152,7 @@ class GenerateCallback(pl.Callback):
     def on_epoch_end(self, trainer, pl_module):
         """
         This function is called after every epoch.
-        Call the save_and_sample function every N epochs.
+        Call the sample_and_save function every N epochs.
         """
         if (trainer.current_epoch + 1) % self.every_n_epochs == 0:
             self.sample_and_save(trainer, pl_module, trainer.current_epoch + 1)
@@ -139,15 +162,21 @@ class GenerateCallback(pl.Callback):
         Function that generates and save samples from the VAE.
         The generated samples and mean images should be added to TensorBoard and,
         if self.save_to_disk is True, saved inside the logging directory.
-        Inputs:
-            trainer - The PyTorch Lightning "Trainer" object.
-            pl_module - The VAE model that is currently being trained.
-            epoch - The epoch number to use for TensorBoard logging and saving of the files.
+
+        Parameters
+        ----------
+        trainer : pl.Trainer
+            The PyTorch Lightning "Trainer" object.
+        pl_module : pl.LightningModule
+            The VAE model that is currently being trained.
+        epoch : int
+            The epoch number to use for TensorBoard logging and saving of the files.
         """
         # Hints:
         # - You can access the logging directory path via trainer.logger.log_dir, and
         # - You can access the tensorboard logger via trainer.logger.experiment
-        # - Remember converting the 4-bit images to a common image format, e.g. float values between 0 and 1.
+        # - Remember converting the 4-bit images to a common image format,
+        #    e.g. float values between 0 and 1.
         # - Use the torchvision function "make_grid" to create a grid of multiple images
         # - Use the torchvision function "save_image" to save an image grid to disk
 
@@ -157,8 +186,11 @@ class GenerateCallback(pl.Callback):
 def train_vae(args):
     """
     Function for training and testing a VAE model.
-    Inputs:
-        args - Namespace object from the argument parser
+
+    Parameters
+    ----------
+    args
+        Namespace object from the argument parser
     """
 
     os.makedirs(args.log_dir, exist_ok=True)
@@ -184,8 +216,8 @@ def train_vae(args):
     if not args.progress_bar:
         print(
             "[INFO] The progress bar has been suppressed. For updates on the training "
-            + f"progress, check the TensorBoard file at {trainer.logger.log_dir}. If you "
-            + 'want to see the progress bar, use the argparse option "progress_bar".\n'
+            f"progress, check the TensorBoard file at {trainer.logger.log_dir}. If you "
+            'want to see the progress bar, use the argparse option "progress_bar".\n'
         )
 
     # Create model
@@ -238,7 +270,8 @@ if __name__ == "__main__":
         "--data_dir",
         default="../data/",
         type=str,
-        help="Directory where to look for the data. For jobs on Lisa, this should be $TMPDIR.",
+        help="Directory where to look for the data."
+        " For jobs on Lisa, this should be $TMPDIR.",
     )
     parser.add_argument("--epochs", default=80, type=int, help="Max number of epochs")
     parser.add_argument(
@@ -248,8 +281,10 @@ if __name__ == "__main__":
         "--num_workers",
         default=4,
         type=int,
-        help="Number of workers to use in the data loaders. To have a truly deterministic run, this has to be 0. "
-        + "For your assignment report, you can use multiple workers (e.g. 4) and do not have to set it to 0.",
+        help="Number of workers to use in the data loaders."
+        " To have a truly deterministic run, this has to be 0."
+        " For your assignment report, you can use multiple workers"
+        " (e.g. 4) and do not have to set it to 0.",
     )
     parser.add_argument(
         "--log_dir",
