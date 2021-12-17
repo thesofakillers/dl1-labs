@@ -124,8 +124,10 @@ def visualize_manifold(decoder, grid_size=20):
     img_grid = torch.empty(grid_size, grid_size, 1, 28, 28)
     for i, z_x in enumerate(grid_x):
         for j, z_y in enumerate(grid_y):
-            # get image from decoder and save it to our image grid
-            img = torch.softmax(decoder(torch.stack([z_x, z_y], dim=1)))
+            # get decoder output, with shape (16, 28, 28)
+            img_probabilities = torch.softmax(decoder(torch.stack([z_x, z_y], dim=1)))
+            # sample from decoder output to get (1, 28, 28)
+            img = torch.multinomial(img_probabilities, 1)
             img_grid[i, j, ...] = img
 
     return img_grid
