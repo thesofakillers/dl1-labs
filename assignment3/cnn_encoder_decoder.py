@@ -20,8 +20,9 @@ import numpy as np
 
 
 class CNNEncoder(nn.Module):
-    def __init__(self, num_input_channels: int = 1, num_filters: int = 32,
-                 z_dim: int = 20):
+    def __init__(
+        self, num_input_channels: int = 1, num_filters: int = 32, z_dim: int = 20
+    ):
         """Encoder with a CNN network
 
         Inputs:
@@ -55,8 +56,9 @@ class CNNEncoder(nn.Module):
 
 
 class CNNDecoder(nn.Module):
-    def __init__(self, num_input_channels: int = 16, num_filters: int = 32,
-                 z_dim: int = 20):
+    def __init__(
+        self, num_input_channels: int = 16, num_filters: int = 32, z_dim: int = 20
+    ):
         """Decoder with a CNN network.
 
         Inputs:
@@ -94,4 +96,3 @@ class CNNDecoder(nn.Module):
         Might be helpful in other functions.
         """
         return next(self.parameters()).device
-

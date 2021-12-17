@@ -30,8 +30,10 @@ def sample_reparameterize(mean, std):
         z - A sample of the distributions, with gradient support for both mean and std.
             The tensor should have the same shape as the mean and std input tensors.
     """
-    assert not (std < 0).any().item(), "The reparameterization trick got a negative std as input. " + \
-                                       "Are you sure your input is std and not log_std?"
+    assert not (std < 0).any().item(), (
+        "The reparameterization trick got a negative std as input. "
+        + "Are you sure your input is std and not log_std?"
+    )
     z = None
     raise NotImplementedError
     return z
@@ -93,4 +95,3 @@ def visualize_manifold(decoder, grid_size=20):
     raise NotImplementedError
 
     return img_grid
-
