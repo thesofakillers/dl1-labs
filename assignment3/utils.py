@@ -91,7 +91,12 @@ def elbo_to_bpd(elbo, img_shape):
     bpd : array-like
         The negative log likelihood in bits per dimension for the given image.
     """
-    bpd = elbo * torch.log2(torch.full_like(elbo, np.e)) * (1 / np.prod(img_shape[1:]))
+    device = elbo.device
+    bpd = (
+        elbo
+        * torch.log2(torch.full_like(elbo, np.e, device=device))
+        * (1 / torch.prod(torch.tensor(img_shape[1:], device=device)))
+    )
     return bpd
 
 
