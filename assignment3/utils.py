@@ -42,8 +42,8 @@ def sample_reparameterize(mean, std):
         "The reparameterization trick got a negative std as input. "
         + "Are you sure your input is std and not log_std?"
     )
-    z = None
-    raise NotImplementedError
+    episolon = torch.randn_like(mean)
+    z = mean + std * episolon
     return z
 
 
