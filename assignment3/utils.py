@@ -69,8 +69,8 @@ def KLD(mean, log_std):
         The values represent the Kullback-Leibler divergence to unit Gaussians.
     """
 
-    KLD = None
-    raise NotImplementedError
+    std = torch.exp(log_std)
+    KLD = torch.sum((std ** 2 + mean ** 2 - 1 - 2 * log_std) / 2, dim=-1)
     return KLD
 
 
