@@ -70,7 +70,7 @@ def KLD(mean, log_std):
     """
 
     std = torch.exp(log_std)
-    KLD = torch.sum((std ** 2 + mean ** 2 - 1 - 2 * log_std) / 2, dim=-1)
+    KLD = (std ** 2 + mean ** 2 - 1 - 2 * log_std).sum(dim=-1) / 2
     return KLD
 
 
@@ -91,8 +91,7 @@ def elbo_to_bpd(elbo, img_shape):
     bpd : array-like
         The negative log likelihood in bits per dimension for the given image.
     """
-    bpd = None
-    raise NotImplementedError
+    bpd = elbo * torch.log2(torch.full_like(elbo, np.e)) * (1 / np.prod(img_shape[1:]))
     return bpd
 
 
