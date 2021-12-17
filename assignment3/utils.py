@@ -118,16 +118,26 @@ def visualize_manifold(decoder, grid_size=20):
         of shape [grid_size, grid_size, channels, height, width]
     """
     z_values = torch.distributions.Normal(0, 1).icdf(
-        torch.linspace(0.5 / grid_size, (grid_size - 0.5) / grid_size), grid_size
+        torch.linspace(0.5 / grid_size, (grid_size - 0.5) / grid_size, grid_size)
     )
-    grid_x, grid_y = torch.meshgrid(z_values, z_values)
-    img_grid = torch.empty(grid_size, grid_size, 1, 28, 28)
-    for i, z_x in enumerate(grid_x):
-        for j, z_y in enumerate(grid_y):
-            # get decoder output, with shape (16, 28, 28)
-            img_probabilities = torch.softmax(decoder(torch.stack([z_x, z_y], dim=1)))
-            # sample from decoder output to get (1, 28, 28)
-            img = torch.multinomial(img_probabilities, 1)
-            img_grid[i, j, ...] = img
+    grid_x, grid_y = torch.meshgrid(z_values, z_values, indexing="ij")
+
+    z = torch.stack((grid_x.flatten(), grid_y.flatten()), dim=1)
+    z = z.to(decoder.device)
+
+    # get decoder output, with shape (400, 16, 28, 28) and apply softmax
+    recon_imgs = decoder(z)
+    B, C, H, W = recon_imgs.size()
+    probabilities = torch.softmax(recon_imgs, dim=1)
+    # reshape so that these are accepted by multinomial
+    probabilities = probabilities.permute(0, 2, 3, 1).flatten(start_dim=0, end_dim=2)
+    # sample from decoder output to get (1, 28, 28)
+    samples = torch.multinomial(probabilities, 1)
+    # reshape back into image
+    samples = samples.reshape(B, 1, H, W)
+    # and finally save our image to our grid
+    img_grid = make_grid(
+        samples.to(torch.float), nrow=grid_size, normalize=True, value_range=(0, 15)
+    )
 
     return img_grid

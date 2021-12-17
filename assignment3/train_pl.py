@@ -100,9 +100,19 @@ class VAE(pl.LightningModule):
         x_samples : array-like
             Sampled, 4-bit images. Shape: [B,C,H,W]
         """
-        x_samples = torch.multinomial(
-            F.softmax(self.decoder(torch.randn(batch_size, self.hparams.z_dim)))
+        sampled_z = torch.randn(batch_size, self.hparams.z_dim)
+        sampled_z = sampled_z.to(self.decoder.device)
+        recon_imgs = self.decoder(sampled_z)
+        B, C, H, W = recon_imgs.size()
+        # shape B, C, H, W
+        probabilities = F.softmax(recon_imgs, 1)
+        # reshape to B*H*W, C
+        probabilities = probabilities.permute((0, 2, 3, 1)).flatten(
+            start_dim=0, end_dim=2
         )
+        x_samples = torch.multinomial(probabilities, 1)
+        # reshape to B, C, H, W
+        x_samples = x_samples.reshape(B, 1, H, W)
         return x_samples
 
     def configure_optimizers(self):
@@ -178,7 +188,12 @@ class GenerateCallback(pl.Callback):
         # sample images
         imgs = pl_module.sample(self.batch_size)
         # rearrange them into a grid
-        img_grid = make_grid(imgs, nrow=np.sqrt(batch_size).astype(int), normalize=True)
+        img_grid = make_grid(
+            imgs.to(torch.float),
+            nrow=np.sqrt(self.batch_size).astype(int),
+            normalize=True,
+            value_range=(0, 15),
+        )
         # save the grid to tensorboard
         trainer.logger.experiment.add_image("samples", img_grid, epoch)
         # save the grid to disk if desired
