@@ -1,6 +1,7 @@
-# UvA Deep Learning 1 Course - Practicals
+# Deep Learning 1 Course - Practicals
 
 This repository contains the code part of the three assignments of the Deep Learning 1 course, Fall 2021 edition.
+I am omitting my University name for searchability reasons. My MSc university can be found on my LinkedIn 
 
 ## Assignments
 
